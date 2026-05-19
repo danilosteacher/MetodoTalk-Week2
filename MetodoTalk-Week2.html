@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W2 · Connection Hub — Talk It Easy English for Agribusiness</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:      #1a5c1a;
+    --green-light:#e8f4e8;
+    --green-mid:  #2e7d2e;
+    --amber:      #b85c00;
+    --amber-light:#fff3e0;
+    --navy:       #1a2a5c;
+    --navy-light: #e8ecf8;
+    --navy-mid:   #2a3f8f;
+    --teal:       #1a4a4a;
+    --teal-light: #e0f0f0;
+    --teal-mid:   #2a7070;
+    --gray-50:    #f9fafb;
+    --gray-200:   #e5e7eb;
+    --gray-600:   #4b5563;
+    --gray-700:   #374151;
+    --gray-800:   #1f2937;
+    --correct:    #166534;
+    --wrong:      #991b1b;
+    --open:       #1a4a4a;
+    --radius:     12px;
+    --radius-sm:  8px;
+    --shadow:     0 2px 12px rgba(0,0,0,.08);
+    --shadow-lg:  0 4px 24px rgba(0,0,0,.13);
+    --header-h:   60px;
+    --tabs-h:     52px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; padding-top: calc(var(--header-h) + var(--tabs-h)); }
+
+  #main-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--header-h); background: var(--green); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; box-shadow: 0 2px 12px rgba(0,0,0,.2); }
+  #main-header .logo { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: #fff; }
+  #main-header .logo span { opacity: .7; font-size: .85rem; }
+  #main-header .week-badge { background: rgba(255,255,255,.18); color: #fff; font-weight: 700; font-size: .85rem; padding: 4px 14px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; }
+
+  #day-tabs { position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 99; height: var(--tabs-h); background: #fff; border-bottom: 2px solid var(--gray-200); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .tab-btn { flex: 1; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 600; color: var(--gray-600); transition: all .2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-bottom: 3px solid transparent; padding: 0 4px; line-height: 1.2; }
+  .tab-btn .day-num { font-size: .68rem; font-weight: 700; opacity: .6; font-family: 'JetBrains Mono', monospace; }
+  .tab-btn:hover { background: var(--gray-50); color: var(--green); }
+  .tab-btn.active { color: var(--green); border-bottom-color: var(--green); background: var(--green-light); }
+
+  .day-panel { display: none; max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; }
+  .day-panel.active { display: block; }
+
+  .day-hero { border-radius: var(--radius); padding: 28px 32px; margin-bottom: 28px; background: linear-gradient(135deg, var(--green) 0%, var(--green-mid) 100%); color: #fff; position: relative; overflow: hidden; }
+  .day-hero-teal { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-mid) 100%); }
+  .day-hero::after { content: ''; position: absolute; right: -30px; top: -30px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,.07); }
+  .day-hero .day-label { font-family: 'JetBrains Mono', monospace; font-size: .75rem; font-weight: 600; opacity: .75; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .day-hero h1 { font-family: 'DM Serif Display', serif; font-size: 1.9rem; margin-bottom: 8px; }
+  .day-hero p { opacity: .85; font-size: .95rem; max-width: 560px; }
+  .video-btn { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.4); color: #fff; padding: 10px 20px; border-radius: 40px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: .9rem; cursor: pointer; margin-top: 16px; transition: all .2s; }
+  .video-btn:hover { background: rgba(255,255,255,.32); transform: translateY(-1px); }
+
+  /* modals removidos — vídeos abrem no YouTube */
+
+  .card { border-radius: var(--radius); padding: 24px 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
+  .card-green { background: var(--green-light); border-left: 4px solid var(--green); }
+  .card-amber { background: var(--amber-light); border-left: 4px solid var(--amber); }
+  .card-navy  { background: var(--navy-light);  border-left: 4px solid var(--navy); }
+  .card-teal  { background: var(--teal-light);  border-left: 4px solid var(--teal); }
+  .card-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; margin-bottom: 14px; }
+  .card-green .card-title { color: var(--green); }
+  .card-amber .card-title { color: var(--amber); }
+  .card-navy  .card-title { color: var(--navy); }
+  .card-teal  .card-title { color: var(--teal); }
+
+  .outcomes-list { list-style: none; }
+  .outcomes-list li { padding: 8px 0 8px 28px; position: relative; font-size: .95rem; border-bottom: 1px solid rgba(26,92,26,.12); }
+  .outcomes-list li:last-child { border-bottom: none; }
+  .outcomes-list li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+  /* ── VOCAB CARDS GRID ── */
+  .vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width:600px){ .vocab-grid { grid-template-columns: 1fr; } }
+
+  .vocab-item {
+    background: #fff; border-radius: var(--radius-sm);
+    padding: 14px 16px; border: 1px solid var(--gray-200);
+    border-left: 3px solid var(--green);
+  }
+  .vocab-item-teal  { border-left-color: var(--teal); }
+  .vocab-item-chunk { border-left-color: var(--navy); }
+
+  .vocab-item .v-num {
+    font-family: 'JetBrains Mono', monospace; font-size: .68rem;
+    font-weight: 700; color: var(--green); opacity: .7;
+    margin-bottom: 4px; display: block;
+  }
+  .vocab-item-teal  .v-num { color: var(--teal); }
+  .vocab-item-chunk .v-num { color: var(--navy); }
+
+  .vocab-item .v-word {
+    font-weight: 700; font-size: .97rem; color: var(--gray-800); margin-bottom: 3px;
+  }
+  .vocab-item .v-pt { font-size: .82rem; color: var(--gray-600); margin-bottom: 5px; }
+  .vocab-item .v-ex {
+    font-family: 'JetBrains Mono', monospace; font-size: .78rem;
+    color: var(--green); font-style: italic;
+  }
+  .vocab-item-teal  .v-ex { color: var(--teal); }
+  .vocab-item-chunk .v-ex { color: var(--navy); font-style: normal; font-size: .8rem; }
+
+  .phrase-row { background: #fff; border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 8px; border: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .phrase-en { font-family: 'JetBrains Mono', monospace; font-size: .88rem; font-weight: 600; color: var(--navy); }
+  .phrase-pt { font-size: .82rem; color: var(--gray-600); text-align: right; flex-shrink: 0; }
+
+  .pattern-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .pattern-table th { background: var(--navy); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+  .pattern-table td { padding: 10px 14px; border-bottom: 1px solid var(--gray-200); }
+  .pattern-table tr:nth-child(even) td { background: var(--navy-light); }
+  .mono { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--navy); }
+
+  .contrast-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+  @media(max-width:500px){ .contrast-grid { grid-template-columns: 1fr; } }
+  .contrast-col .col-label { font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+  .contrast-col ul { list-style: none; }
+  .contrast-col ul li { font-family: 'JetBrains Mono', monospace; font-size: .83rem; padding: 4px 0; }
+
+  .dialogue-box { background: #fff; border: 1px solid var(--navy-light); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 14px; }
+  .dialogue-line { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+  .dialogue-line:last-child { margin-bottom: 0; }
+  .dialogue-speaker { font-weight: 700; color: var(--navy); font-size: .82rem; min-width: 30px; padding-top: 2px; }
+  .dialogue-text { font-family: 'JetBrains Mono', monospace; font-size: .85rem; line-height: 1.6; }
+
+  .ex-block { margin-bottom: 20px; }
+  .ex-instruction { font-size: .85rem; color: var(--gray-600); margin-bottom: 14px; font-style: italic; }
+  .ex-item { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ex-num { font-weight: 700; color: var(--navy); min-width: 22px; font-size: .9rem; }
+  .ex-text { font-size: .9rem; }
+  .ex-item input[type="text"] { border: 2px solid var(--gray-200); border-radius: var(--radius-sm); padding: 6px 12px; font-family: 'DM Sans', sans-serif; font-size: .9rem; min-width: 150px; transition: border-color .2s; }
+  .ex-item input[type="text"]:focus { outline: none; border-color: var(--navy); }
+  .feedback { font-size: .82rem; }
+  .feedback.correct { color: var(--correct); }
+  .feedback.wrong   { color: var(--wrong); }
+  .feedback.open    { color: var(--open); }
+
+  .btn-check { background: var(--navy); color: #fff; border: none; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-size: .82rem; font-weight: 600; transition: background .2s; }
+  .btn-check:hover { background: var(--navy-mid); }
+  .btn-check-all { display: inline-flex; align-items: center; gap: 6px; background: var(--green); color: #fff; border: none; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-size: .9rem; font-weight: 700; margin-top: 14px; transition: background .2s; }
+  .btn-check-all:hover { background: var(--green-mid); }
+  .score-box { display: none; margin-top: 12px; background: #fff; border: 2px solid var(--gray-200); border-radius: var(--radius); padding: 14px 20px; font-size: 1rem; font-weight: 600; text-align: center; }
+
+  .audio-card { background: #fff; border: 1px solid var(--teal-light); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px; }
+  .audio-card-title { font-weight: 700; color: var(--teal); margin-bottom: 6px; font-size: .95rem; }
+  .audio-steps { font-size: .85rem; color: var(--gray-600); margin-bottom: 14px; line-height: 1.8; }
+  .audio-btn { display: inline-flex; align-items: center; gap: 7px; background: var(--teal); color: #fff; border: none; padding: 9px 20px; border-radius: 30px; cursor: pointer; font-size: .88rem; font-weight: 700; text-decoration: none; transition: background .2s; }
+  .audio-btn:hover { background: var(--teal-mid); }
+  .script-toggle-btn { margin-top: 14px; display: inline-block; background: none; border: 1px solid var(--teal); color: var(--teal); padding: 5px 14px; border-radius: 20px; font-size: .8rem; cursor: pointer; font-weight: 600; }
+  .script-box { display: none; margin-top: 10px; background: var(--teal-light); border-radius: var(--radius-sm); padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: .83rem; color: var(--teal); line-height: 1.7; }
+
+  .production-task { background: #fff; border-radius: var(--radius); border: 2px dashed var(--green); padding: 20px 24px; margin-bottom: 16px; }
+  .production-task .task-label { font-weight: 700; color: var(--green); font-size: .88rem; margin-bottom: 6px; }
+  .production-task .task-instruction { font-size: .88rem; color: var(--gray-700); margin-bottom: 10px; line-height: 1.5; }
+  .production-task textarea { width: 100%; min-height: 90px; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: .9rem; resize: vertical; color: var(--gray-800); }
+  .production-task textarea:focus { outline: none; border-color: var(--green); }
+  .example-model { display: none; margin-top: 10px; background: var(--green-light); border-radius: var(--radius-sm); padding: 12px 16px; font-size: .85rem; color: var(--green); font-family: 'JetBrains Mono', monospace; line-height: 1.5; }
+  .btn-show-model { margin-top: 8px; background: none; border: 1px solid var(--green); color: var(--green); padding: 5px 14px; border-radius: 20px; font-size: .8rem; cursor: pointer; font-weight: 600; }
+
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--gray-800); margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--gray-200); }
+  .alert-box { background: #fffbeb; border: 1px solid #fbbf24; border-radius: var(--radius-sm); padding: 12px 16px; font-size: .88rem; color: #92400e; margin-bottom: 14px; }
+
+  /* vocab badge acima da tabela */
+  .vocab-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green); color: #fff; font-size: .78rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+  .vocab-badge-teal { background: var(--teal); }
+
+  @media(max-width:600px){
+    .day-hero { padding: 20px 18px; } .day-hero h1 { font-size: 1.4rem; }
+    .card { padding: 18px 16px; } #main-header { padding: 0 14px; }
+    .tab-btn { font-size: .72rem; } .phrase-row { flex-direction: column; align-items: flex-start; }
+    .vocab-table td, .vocab-table th { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header id="main-header">
+  <div class="logo">Talk It Easy <span>· English for Agribusiness</span></div>
+  <div class="week-badge">W2 · Connection Hub</div>
+</header>
+
+<nav id="day-tabs">
+  <button class="tab-btn active" onclick="showDay(1)"><span class="day-num">DAY 1</span>He is / She is</button>
+  <button class="tab-btn" onclick="showDay(2)"><span class="day-num">DAY 2</span>They are / This is</button>
+  <button class="tab-btn" onclick="showDay(3)"><span class="day-num">DAY 3</span>Perguntas & Drill</button>
+  <button class="tab-btn" onclick="showDay(4)"><span class="day-num">DAY 4</span>Listening</button>
+  <button class="tab-btn" onclick="showDay(5)"><span class="day-num">DAY 5</span>Produção Livre</button>
+</nav>
+
+<!-- ══════════════════════════════════
+     DAY 1
+══════════════════════════════════ -->
+<div class="day-panel active" id="day-1">
+  <div class="day-hero">
+    <div class="day-label">Day 1 · W2 Connection Hub</div>
+    <h1>He is / She is</h1>
+    <p>Aprenda a falar sobre outras pessoas no seu ambiente de trabalho — cargo, localização e disponibilidade.</p>
+    <a class="video-btn" href="https://youtu.be/-H8d7__Z4u4" target="_blank">▶ Assistir Vídeo — Dia 1</a>
+  </div>
+
+  <div class="card card-green">
+    <div class="card-title">🎯 Learning Outcomes — Day 1</div>
+    <ul class="outcomes-list">
+      <li>Usar <strong>He is / She is</strong> para apresentar colegas de trabalho</li>
+      <li>Descrever cargo e localização usando to be na 3ª pessoa do singular</li>
+      <li>Entender que <strong>He / She</strong> muda com o gênero da pessoa, não com você</li>
+      <li>Produzir frases completas: nome + cargo + localização + status</li>
+    </ul>
+  </div>
+
+  <!-- VOCAB DO DIA 1 -->
+  <div class="card card-green">
+    <div class="card-title">📚 Vocabulário do Dia — 10 palavras & expressões</div>
+    <div class="vocab-badge">📖 Dia 1 de 5 · Profissões & Localizações essenciais</div>
+    <div class="vocab-grid">
+      <div class="vocab-item"><span class="v-num">01</span><div class="v-word">agronomist</div><div class="v-pt">agrônomo / agrônoma</div><div class="v-ex">She is an agronomist.</div></div>
+      <div class="vocab-item"><span class="v-num">02</span><div class="v-word">veterinarian</div><div class="v-pt">veterinário / veterinária</div><div class="v-ex">He is a veterinarian.</div></div>
+      <div class="vocab-item"><span class="v-num">03</span><div class="v-word">sales manager</div><div class="v-pt">gerente de vendas</div><div class="v-ex">He is the sales manager.</div></div>
+      <div class="vocab-item"><span class="v-num">04</span><div class="v-word">coordinator</div><div class="v-pt">coordenador / coordenadora</div><div class="v-ex">She is a coordinator.</div></div>
+      <div class="vocab-item"><span class="v-num">05</span><div class="v-word">at the farm</div><div class="v-pt">na fazenda</div><div class="v-ex">He is at the farm today.</div></div>
+      <div class="vocab-item"><span class="v-num">06</span><div class="v-word">at the office</div><div class="v-pt">no escritório</div><div class="v-ex">She is at the office.</div></div>
+      <div class="vocab-item"><span class="v-num">07</span><div class="v-word">in the field</div><div class="v-pt">no campo</div><div class="v-ex">He is in the field.</div></div>
+      <div class="vocab-item"><span class="v-num">08</span><div class="v-word">busy</div><div class="v-pt">ocupado / ocupada</div><div class="v-ex">She is busy right now.</div></div>
+      <div class="vocab-item"><span class="v-num">09</span><div class="v-word">ready</div><div class="v-pt">pronto / pronta</div><div class="v-ex">He is ready for the meeting.</div></div>
+      <div class="vocab-item"><span class="v-num">10</span><div class="v-word">This is</div><div class="v-pt">Este/Esta é — para apresentar alguém</div><div class="v-ex">This is Ana. She is an agronomist.</div></div>
+    </div>
+  </div>
+
+  <!-- GRAMMAR -->
+  <div class="section-title">📐 O Padrão — He is / She is</div>
+
+  <div class="card card-amber">
+    <div class="card-title">⚠️ Atenção — Erro mais comum</div>
+    <div class="contrast-grid">
+      <div class="contrast-col">
+        <div class="col-label" style="color:var(--green)">✅ Correto</div>
+        <ul><li>He <strong>is</strong> an agronomist.</li><li>She <strong>is</strong> at the farm.</li><li>He <strong>is</strong> the manager.</li></ul>
+      </div>
+      <div class="contrast-col">
+        <div class="col-label" style="color:var(--wrong)">❌ Erro comum</div>
+        <ul><li>He <strong>are</strong> an agronomist.</li><li>She <strong>am</strong> at the farm.</li><li>He is <strong>a the</strong> manager.</li></ul>
+      </div>
+    </div>
+    <p style="margin-top:14px;font-size:.85rem;color:var(--amber)">🔑 He e She sempre usam IS — nunca am, nunca are.</p>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">📊 Estrutura — He is / She is</div>
+    <table class="pattern-table">
+      <tr><th>Sujeito</th><th>Verbo</th><th>+ Informação</th><th>Exemplo</th></tr>
+      <tr><td class="mono">He is</td><td>is</td><td>cargo</td><td>He is a veterinarian.</td></tr>
+      <tr><td class="mono">She is</td><td>is</td><td>localização</td><td>She is at the farm.</td></tr>
+      <tr><td class="mono">He is</td><td>is</td><td>status</td><td>He is busy.</td></tr>
+      <tr><td class="mono">She is</td><td>is</td><td>origem</td><td>She is from Goiás.</td></tr>
+    </table>
+    <p style="margin-top:12px;font-size:.85rem;color:var(--navy-mid)">💡 Contrações: <strong>He is → He's</strong> &nbsp;/&nbsp; <strong>She is → She's</strong></p>
+  </div>
+
+  <div class="section-title">💬 Frases para Usar</div>
+  <div class="card card-navy">
+    <div class="card-title">🗣️ Apresentando no contexto do agro</div>
+    <div class="phrase-row"><span class="phrase-en">This is Ana. She is an agronomist. She is from the technical team.</span></div>
+    <div class="phrase-row"><span class="phrase-en">This is Lucas. He is a veterinarian. He is at the farm today.</span></div>
+    <div class="phrase-row"><span class="phrase-en">She is busy, but she is ready for the meeting.</span></div>
+    <div class="phrase-row"><span class="phrase-en">He is the sales manager. He is from São Paulo.</span></div>
+    <div class="phrase-row"><span class="phrase-en">She is available. She is in the office right now.</span></div>
+  </div>
+
+  <div class="section-title">✏️ Exercícios — Dia 1</div>
+
+  <div class="card card-navy">
+    <div class="card-title">Exercise 1 — Complete com HE IS ou SHE IS</div>
+    <div class="ex-instruction">Complete as frases de acordo com o nome entre parênteses.</div>
+    <div class="ex-block">
+      <div class="ex-item"><span class="ex-num">1.</span><input type="text" id="d1e1_1" placeholder="He is / She is"><span class="ex-text">a field representative. (Pedro)</span><button class="btn-check" onclick="checkOne('d1e1_1','he is')">✓</button><span class="feedback" id="fb-d1e1_1"></span></div>
+      <div class="ex-item"><span class="ex-num">2.</span><input type="text" id="d1e1_2" placeholder="He is / She is"><span class="ex-text">my partner. (Lívia)</span><button class="btn-check" onclick="checkOne('d1e1_2','she is')">✓</button><span class="feedback" id="fb-d1e1_2"></span></div>
+      <div class="ex-item"><span class="ex-num">3.</span><input type="text" id="d1e1_3" placeholder="He is / She is"><span class="ex-text">online. (Luna)</span><button class="btn-check" onclick="checkOne('d1e1_3','she is')">✓</button><span class="feedback" id="fb-d1e1_3"></span></div>
+      <div class="ex-item"><span class="ex-num">4.</span><input type="text" id="d1e1_4" placeholder="He is / She is"><span class="ex-text">the sales manager. (Ricardo)</span><button class="btn-check" onclick="checkOne('d1e1_4','he is')">✓</button><span class="feedback" id="fb-d1e1_4"></span></div>
+      <div class="ex-item"><span class="ex-num">5.</span><input type="text" id="d1e1_5" placeholder="He is / She is"><span class="ex-text">an agronomist. (Camila)</span><button class="btn-check" onclick="checkOne('d1e1_5','she is')">✓</button><span class="feedback" id="fb-d1e1_5"></span></div>
+      <div class="ex-item"><span class="ex-num">6.</span><input type="text" id="d1e1_6" placeholder="He is / She is"><span class="ex-text">at the farm. (João)</span><button class="btn-check" onclick="checkOne('d1e1_6','he is')">✓</button><span class="feedback" id="fb-d1e1_6"></span></div>
+      <div class="ex-item"><span class="ex-num">7.</span><input type="text" id="d1e1_7" placeholder="He is / She is"><span class="ex-text">the director. (Dr. Souza)</span><button class="btn-check" onclick="checkOne('d1e1_7','he is')">✓</button><span class="feedback" id="fb-d1e1_7"></span></div>
+      <button class="btn-check-all" onclick="checkAll('d1-ex1')">✓ Checar Tudo</button>
+      <div class="score-box" id="score-d1-ex1"></div>
+    </div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">Drill 1 — The Pronoun Shift</div>
+    <div class="ex-instruction">Mude a frase de acordo com o pronome entre parênteses. Escreva a frase completa.</div>
+    <div class="ex-block">
+      <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">I am at the office. (She) →</span><input type="text" id="d1d1_1" placeholder="She is..."><button class="btn-check" onclick="checkOne('d1d1_1','she is at the office')">✓</button><span class="feedback" id="fb-d1d1_1"></span></div>
+      <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">You are an engineer. (He) →</span><input type="text" id="d1d1_2" placeholder="He is..."><button class="btn-check" onclick="checkOne('d1d1_2','he is an engineer')">✓</button><span class="feedback" id="fb-d1d1_2"></span></div>
+      <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">I am from Brazil. (She) →</span><input type="text" id="d1d1_3" placeholder="She is..."><button class="btn-check" onclick="checkOne('d1d1_3','she is from brazil')">✓</button><span class="feedback" id="fb-d1d1_3"></span></div>
+      <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">You are ready. (He) →</span><input type="text" id="d1d1_4" placeholder="He is..."><button class="btn-check" onclick="checkOne('d1d1_4','he is ready')">✓</button><span class="feedback" id="fb-d1d1_4"></span></div>
+      <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">I am on a business trip. (She) →</span><input type="text" id="d1d1_5" placeholder="She is..."><button class="btn-check" onclick="checkOne('d1d1_5','she is on a business trip')">✓</button><span class="feedback" id="fb-d1d1_5"></span></div>
+      <div class="ex-item"><span class="ex-num">6.</span><span class="ex-text">She is a coordinator. (He) →</span><input type="text" id="d1d1_6" placeholder="He is..."><button class="btn-check" onclick="checkOne('d1d1_6','he is a coordinator')">✓</button><span class="feedback" id="fb-d1d1_6"></span></div>
+      <button class="btn-check-all" onclick="checkAll('d1-drill1')">✓ Checar Tudo</button>
+      <div class="score-box" id="score-d1-drill1"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     DAY 2
+══════════════════════════════════ -->
+<div class="day-panel" id="day-2">
+  <div class="day-hero">
+    <div class="day-label">Day 2 · W2 Connection Hub</div>
+    <h1>They are / This is / These are</h1>
+    <p>Fale sobre grupos, apresente pessoas e substitua pronomes por cargos como um profissional.</p>
+    <a class="video-btn" href="https://youtu.be/7FXYbwuSr9Y" target="_blank">▶ Assistir Vídeo — Dia 2</a>
+  </div>
+
+  <div class="card card-green">
+    <div class="card-title">🎯 Learning Outcomes — Day 2</div>
+    <ul class="outcomes-list">
+      <li>Usar <strong>They are</strong> para descrever grupos e equipes no agronegócio</li>
+      <li>Diferenciar <strong>This is</strong> (1 pessoa) de <strong>These are</strong> (2 ou mais)</li>
+      <li>Substituir He / She / They pelo cargo ou título da pessoa</li>
+      <li>Usar contrações: He's / She's / They're com naturalidade</li>
+    </ul>
+  </div>
+
+  <!-- VOCAB DO DIA 2 -->
+  <div class="card card-green">
+    <div class="card-title">📚 Vocabulário do Dia — 10 palavras & expressões</div>
+    <div class="vocab-badge">📖 Dia 2 de 5 · Mais profissões, localizações & contrações</div>
+    <div class="vocab-grid">
+      <div class="vocab-item"><span class="v-num">01</span><div class="v-word">technical analyst</div><div class="v-pt">analista técnico/a</div><div class="v-ex">She is a technical analyst.</div></div>
+      <div class="vocab-item"><span class="v-num">02</span><div class="v-word">field representative</div><div class="v-pt">representante de campo</div><div class="v-ex">He is a field representative.</div></div>
+      <div class="vocab-item"><span class="v-num">03</span><div class="v-word">consultant</div><div class="v-pt">consultor / consultora</div><div class="v-ex">He is a consultant.</div></div>
+      <div class="vocab-item"><span class="v-num">04</span><div class="v-word">director</div><div class="v-pt">diretor / diretora</div><div class="v-ex">She is the director.</div></div>
+      <div class="vocab-item"><span class="v-num">05</span><div class="v-word">at the branch</div><div class="v-pt">na filial</div><div class="v-ex">He is at the branch today.</div></div>
+      <div class="vocab-item"><span class="v-num">06</span><div class="v-word">at the headquarters</div><div class="v-pt">na matriz / sede</div><div class="v-ex">They are at the headquarters.</div></div>
+      <div class="vocab-item"><span class="v-num">07</span><div class="v-word">available</div><div class="v-pt">disponível</div><div class="v-ex">She is available for the meeting.</div></div>
+      <div class="vocab-item"><span class="v-num">08</span><div class="v-word">in training</div><div class="v-pt">em treinamento</div><div class="v-ex">They are in training.</div></div>
+      <div class="vocab-item"><span class="v-num">09</span><div class="v-word">These are</div><div class="v-pt">Estes/Estas são — para 2+ pessoas</div><div class="v-ex">These are Ana and Pedro.</div></div>
+      <div class="vocab-item"><span class="v-num">10</span><div class="v-word">They are / They're</div><div class="v-pt">Eles/Elas são / estão</div><div class="v-ex">They are agronomists. They're ready.</div></div>
+    </div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">📊 Estrutura — They are & contrações</div>
+    <table class="pattern-table">
+      <tr><th>Estrutura</th><th>Exemplo</th></tr>
+      <tr><td class="mono">They are + cargo</td><td>They are agronomists.</td></tr>
+      <tr><td class="mono">They are + origem</td><td>They are from Brasília.</td></tr>
+      <tr><td class="mono">They are + localização</td><td>They are at the branch.</td></tr>
+      <tr><td class="mono">They are + status</td><td>They are ready for the project.</td></tr>
+    </table>
+    <p style="margin-top:12px;font-size:.85rem;color:var(--navy-mid)">💡 Contração: <strong>He is → He's</strong> &nbsp;/&nbsp; <strong>She is → She's</strong> &nbsp;/&nbsp; <strong>They are → They're</strong></p>
+  </div>
+
+  <div class="card card-amber">
+    <div class="card-title">⚠️ This is vs These are</div>
+    <div class="contrast-grid">
+      <div class="contrast-col">
+        <div class="col-label" style="color:var(--navy)">THIS IS — 1 pessoa</div>
+        <ul><li>This is Ana. She is an agronomist.</li><li>This is my manager, Dr. Souza.</li></ul>
+      </div>
+      <div class="contrast-col">
+        <div class="col-label" style="color:var(--navy)">THESE ARE — 2+ pessoas</div>
+        <ul><li>These are Ana and Pedro.</li><li>These are the representatives.</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">🔄 Title Shift — Substitua o pronome pelo cargo</div>
+    <p style="font-size:.88rem;color:var(--gray-700);margin-bottom:14px">O verbo <strong>is / are</strong> não muda quando você substitui o pronome pelo cargo ou nome.</p>
+    <div class="phrase-row"><span class="phrase-en">He is busy. → The manager is busy.</span></div>
+    <div class="phrase-row"><span class="phrase-en">She is at the farm. → My coordinator is at the farm.</span></div>
+    <div class="phrase-row"><span class="phrase-en">They are ready. → The clients are ready.</span></div>
+    <div class="phrase-row"><span class="phrase-en">He is happy. → Paulo is happy.</span></div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">📌 Diálogos — Apresentando a equipe</div>
+    <div class="dialogue-box">
+      <div class="dialogue-line"><span class="dialogue-speaker">YOU:</span><span class="dialogue-text">Hello! I am Ricardo. I am the sales manager. This is Ana. She is an agronomist. She is from the technical team. She is busy today, but she is ready.</span></div>
+    </div>
+    <div class="dialogue-box">
+      <div class="dialogue-line"><span class="dialogue-speaker">YOU:</span><span class="dialogue-text">Hello! I am the coordinator. This is my team. These are Paulo and Mary. They are agronomists. They are from Brasília. They are in the office today.</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">✏️ Exercícios — Dia 2</div>
+
+  <div class="card card-navy">
+    <div class="card-title">Exercise 1 — This is or These are?</div>
+    <div class="ex-instruction">Complete com THIS IS ou THESE ARE.</div>
+    <div class="ex-block">
+      <div class="ex-item"><span class="ex-num">1.</span><input type="text" id="d2e1_1" placeholder="This is / These are"><span class="ex-text">Laura. She is the new analyst.</span><button class="btn-check" onclick="checkOne('d2e1_1','this is')">✓</button><span class="feedback" id="fb-d2e1_1"></span></div>
+      <div class="ex-item"><span class="ex-num">2.</span><input type="text" id="d2e1_2" placeholder="This is / These are"><span class="ex-text">Julia and Marcos. They are representatives.</span><button class="btn-check" onclick="checkOne('d2e1_2','these are')">✓</button><span class="feedback" id="fb-d2e1_2"></span></div>
+      <div class="ex-item"><span class="ex-num">3.</span><input type="text" id="d2e1_3" placeholder="This is / These are"><span class="ex-text">my partner, Lucas.</span><button class="btn-check" onclick="checkOne('d2e1_3','this is')">✓</button><span class="feedback" id="fb-d2e1_3"></span></div>
+      <div class="ex-item"><span class="ex-num">4.</span><input type="text" id="d2e1_4" placeholder="This is / These are"><span class="ex-text">the assistants. They are in training.</span><button class="btn-check" onclick="checkOne('d2e1_4','these are')">✓</button><span class="feedback" id="fb-d2e1_4"></span></div>
+      <div class="ex-item"><span class="ex-num">5.</span><input type="text" id="d2e1_5" placeholder="This is / These are"><span class="ex-text">Mr. Green. He is the director.</span><button class="btn-check" onclick="checkOne('d2e1_5','this is')">✓</button><span class="feedback" id="fb-d2e1_5"></span></div>
+      <button class="btn-check-all" onclick="checkAll('d2-ex1')">✓ Checar Tudo</button>
+      <div class="score-box" id="score-d2-ex1"></div>
+    </div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">Drill 2 — Build the Profile</div>
+    <div class="ex-instruction">Conecte as informações em duas frases usando He is / She is / They are.</div>
+    <div class="ex-block">
+      <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">Ana / coordinator / in the field →</span><input type="text" id="d2d2_1" placeholder="She is... She is..." style="min-width:220px"><button class="btn-check" onclick="checkOne('d2d2_1','she is a coordinator. she is in the field')">✓</button><span class="feedback" id="fb-d2d2_1"></span></div>
+      <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">Pedro and João / representatives / busy →</span><input type="text" id="d2d2_2" placeholder="They are... They are..." style="min-width:220px"><button class="btn-check" onclick="checkOne('d2d2_2','they are representatives. they are busy')">✓</button><span class="feedback" id="fb-d2d2_2"></span></div>
+      <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">Laura / analyst / online →</span><input type="text" id="d2d2_3" placeholder="She is... She is..." style="min-width:220px"><button class="btn-check" onclick="checkOne('d2d2_3','she is an analyst. she is online')">✓</button><span class="feedback" id="fb-d2d2_3"></span></div>
+      <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">Mr. Silva / director / at the branch →</span><input type="text" id="d2d2_4" placeholder="He is... He is..." style="min-width:220px"><button class="btn-check" onclick="checkOne('d2d2_4','he is the director. he is at the branch')">✓</button><span class="feedback" id="fb-d2d2_4"></span></div>
+      <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">The clients / happy / at the conference →</span><input type="text" id="d2d2_5" placeholder="They are... They are..." style="min-width:220px"><button class="btn-check" onclick="checkOne('d2d2_5','they are happy. they are at the conference')">✓</button><span class="feedback" id="fb-d2d2_5"></span></div>
+      <button class="btn-check-all" onclick="checkAll('d2-drill2')">✓ Checar Tudo</button>
+      <div class="score-box" id="score-d2-drill2"></div>
+    </div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">Drill 3 — The Title Shift</div>
+    <div class="ex-instruction">Reescreva a frase substituindo o pronome pelo título entre parênteses.</div>
+    <div class="ex-block">
+      <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">He is in a meeting. (The manager) →</span><input type="text" id="d2d3_1" placeholder="The manager is..." style="min-width:200px"><button class="btn-check" onclick="checkOne('d2d3_1','the manager is in a meeting')">✓</button><span class="feedback" id="fb-d2d3_1"></span></div>
+      <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">She is from the sales team. (The new analyst) →</span><input type="text" id="d2d3_2" placeholder="The new analyst is..." style="min-width:200px"><button class="btn-check" onclick="checkOne('d2d3_2','the new analyst is from the sales team')">✓</button><span class="feedback" id="fb-d2d3_2"></span></div>
+      <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">They are at the headquarters. (The partners) →</span><input type="text" id="d2d3_3" placeholder="The partners are..." style="min-width:200px"><button class="btn-check" onclick="checkOne('d2d3_3','the partners are at the headquarters')">✓</button><span class="feedback" id="fb-d2d3_3"></span></div>
+      <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">He is in the field. (The agronomist) →</span><input type="text" id="d2d3_4" placeholder="The agronomist is..." style="min-width:200px"><button class="btn-check" onclick="checkOne('d2d3_4','the agronomist is in the field')">✓</button><span class="feedback" id="fb-d2d3_4"></span></div>
+      <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">She is online. (Mariana) →</span><input type="text" id="d2d3_5" placeholder="Mariana is..." style="min-width:200px"><button class="btn-check" onclick="checkOne('d2d3_5','mariana is online')">✓</button><span class="feedback" id="fb-d2d3_5"></span></div>
+      <button class="btn-check-all" onclick="checkAll('d2-drill3')">✓ Checar Tudo</button>
+      <div class="score-box" id="score-d2-drill3"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     DAY 3
+══════════════════════════════════ -->
+<div class="day-panel" id="day-3">
+  <div class="day-hero">
+    <div class="day-label">Day 3 · W2 Connection Hub</div>
+    <h1>Perguntas & Integração</h1>
+    <p>Conecte todas as formas do verbo to be — faça perguntas e responda sobre pessoas no seu trabalho.</p>
+    <a class="video-btn" href="https://youtu.be/R9XjLIRfXWg" target="_blank">▶ Assistir Vídeo — Dia 3</a>
+  </div>
+
+  <div class="card card-green">
+    <div class="card-title">🎯 Learning Outcomes — Day 3</div>
+    <ul class="outcomes-list">
+      <li>Fazer perguntas sobre outras pessoas: <strong>Is he...? / Is she...? / Are they...?</strong></li>
+      <li>Responder de forma curta: <strong>Yes, he is. / No, she isn't.</strong></li>
+      <li>Integrar I am / He is / She is / They are em conversas completas</li>
+      <li>Usar <strong>and / but</strong> para conectar informações sobre equipe</li>
+    </ul>
+  </div>
+
+  <!-- VOCAB DO DIA 3 -->
+  <div class="card card-green">
+    <div class="card-title">📚 Vocabulário do Dia — 10 expressões de comunicação</div>
+    <div class="vocab-badge">📖 Dia 3 de 5 · Perguntas, respostas curtas & conectores</div>
+    <div class="vocab-grid">
+      <div class="vocab-item"><span class="v-num">01</span><div class="v-word">Is he...?</div><div class="v-pt">Ele é / está...?</div><div class="v-ex">Is he the manager?</div></div>
+      <div class="vocab-item"><span class="v-num">02</span><div class="v-word">Is she...?</div><div class="v-pt">Ela é / está...?</div><div class="v-ex">Is she at the farm?</div></div>
+      <div class="vocab-item"><span class="v-num">03</span><div class="v-word">Are they...?</div><div class="v-pt">Eles/Elas são / estão...?</div><div class="v-ex">Are they available?</div></div>
+      <div class="vocab-item"><span class="v-num">04</span><div class="v-word">Yes, he is.</div><div class="v-pt">Sim, ele é / está.</div><div class="v-ex">Is he ready? Yes, he is.</div></div>
+      <div class="vocab-item"><span class="v-num">05</span><div class="v-word">Yes, she is.</div><div class="v-pt">Sim, ela é / está.</div><div class="v-ex">Is she the analyst? Yes, she is.</div></div>
+      <div class="vocab-item"><span class="v-num">06</span><div class="v-word">No, he isn't.</div><div class="v-pt">Não, ele não é / está.</div><div class="v-ex">Is he at the office? No, he isn't.</div></div>
+      <div class="vocab-item"><span class="v-num">07</span><div class="v-word">No, they aren't.</div><div class="v-pt">Não, eles/elas não são / estão.</div><div class="v-ex">Are they ready? No, they aren't.</div></div>
+      <div class="vocab-item"><span class="v-num">08</span><div class="v-word">and</div><div class="v-pt">e — para adicionar informação</div><div class="v-ex">She is busy and she is at the farm.</div></div>
+      <div class="vocab-item"><span class="v-num">09</span><div class="v-word">but</div><div class="v-pt">mas — para contrastar</div><div class="v-ex">He is busy, but he is ready.</div></div>
+      <div class="vocab-item"><span class="v-num">10</span><div class="v-word">on a business trip</div><div class="v-pt">em viagem de trabalho</div><div class="v-ex">She is on a business trip today.</div></div>
+    </div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">❓ Fazendo Perguntas com To Be</div>
+    <table class="pattern-table">
+      <tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr>
+      <tr><td class="mono">Is he ready?</td><td>Yes, he is.</td><td>No, he isn't.</td></tr>
+      <tr><td class="mono">Is she at the farm?</td><td>Yes, she is.</td><td>No, she isn't.</td></tr>
+      <tr><td class="mono">Are they available?</td><td>Yes, they are.</td><td>No, they aren't.</td></tr>
+      <tr><td class="mono">Is he the manager?</td><td>Yes, he is.</td><td>No, he isn't.</td></tr>
+    </table>
+    <p style="margin-top:12px;font-size:.85rem;color:var(--navy-mid)">⚡ isn't = is not &nbsp;/&nbsp; aren't = are not</p>
+  </div>
+
+  <div class="card card-amber">
+    <div class="card-title">🔗 Conectores — and / but</div>
+    <div class="contrast-grid">
+      <div class="contrast-col">
+        <div class="col-label" style="color:var(--navy)">AND — adicionar info</div>
+        <ul><li>She is an agronomist <strong>and</strong> she is ready.</li><li>He is at the farm <strong>and</strong> he is busy.</li></ul>
+      </div>
+      <div class="contrast-col">
+        <div class="col-label" style="color:var(--navy)">BUT — contraste</div>
+        <ul><li>She is busy, <strong>but</strong> she is available.</li><li>He is at the branch, <strong>but</strong> he is online.</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">🗣️ Frases de Uso Real</div>
+    <div class="phrase-row"><span class="phrase-en">Is she the new agronomist?</span><span class="phrase-pt">Ela é a nova agrônoma?</span></div>
+    <div class="phrase-row"><span class="phrase-en">Yes, she is. She is from the operations team.</span><span class="phrase-pt">Sim. Ela é da equipe de operações.</span></div>
+    <div class="phrase-row"><span class="phrase-en">Is he available for the meeting?</span><span class="phrase-pt">Ele está disponível para a reunião?</span></div>
+    <div class="phrase-row"><span class="phrase-en">No, he isn't. He is at the farm today.</span><span class="phrase-pt">Não. Ele está na fazenda hoje.</span></div>
+    <div class="phrase-row"><span class="phrase-en">Are they ready for the project?</span><span class="phrase-pt">Eles estão prontos para o projeto?</span></div>
+    <div class="phrase-row"><span class="phrase-en">Yes, they are. They are in the office right now.</span><span class="phrase-pt">Sim. Eles estão no escritório agora.</span></div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">🎭 Diálogo Completo — Visita à Fazenda</div>
+    <div class="dialogue-box">
+      <div class="dialogue-line"><span class="dialogue-speaker">A:</span><span class="dialogue-text">Hello! I am Fernanda. I am the coordinator.</span></div>
+      <div class="dialogue-line"><span class="dialogue-speaker">B:</span><span class="dialogue-text">Hi Fernanda! Is Dr. Almeida available today?</span></div>
+      <div class="dialogue-line"><span class="dialogue-speaker">A:</span><span class="dialogue-text">No, he isn't. He is at the branch. But he is online!</span></div>
+      <div class="dialogue-line"><span class="dialogue-speaker">B:</span><span class="dialogue-text">Great. And the team? Are they ready?</span></div>
+      <div class="dialogue-line"><span class="dialogue-speaker">A:</span><span class="dialogue-text">Yes, they are! These are Ana and Paulo. They are agronomists and they are ready for the visit.</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">✏️ Exercícios — Dia 3</div>
+
+  <div class="card card-navy">
+    <div class="card-title">Exercise — Complete o diálogo</div>
+    <div class="ex-instruction">Complete com Is he / Is she / Are they / Yes / No / he / she / they.</div>
+    <div class="ex-block">
+      <div class="ex-item"><span class="ex-num">1.</span><input type="text" id="d3e1_1" placeholder="Is he / Is she / Are they"><span class="ex-text">Paulo the veterinarian? — Yes, he is.</span><button class="btn-check" onclick="checkOne('d3e1_1','is he')">✓</button><span class="feedback" id="fb-d3e1_1"></span></div>
+      <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">Is she at the farm? —</span><input type="text" id="d3e1_2" placeholder="Yes / No"><span class="ex-text">, she is. She is with the clients.</span><button class="btn-check" onclick="checkOne('d3e1_2','yes')">✓</button><span class="feedback" id="fb-d3e1_2"></span></div>
+      <div class="ex-item"><span class="ex-num">3.</span><input type="text" id="d3e1_3" placeholder="Is he / Is she / Are they"><span class="ex-text">ready for the project? (Carlos and Ana) — No, they aren't.</span><button class="btn-check" onclick="checkOne('d3e1_3','are they')">✓</button><span class="feedback" id="fb-d3e1_3"></span></div>
+      <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">Is he the new consultant? — No,</span><input type="text" id="d3e1_4" placeholder="he / she / they"><span class="ex-text">isn't. He is the coordinator.</span><button class="btn-check" onclick="checkOne('d3e1_4','he')">✓</button><span class="feedback" id="fb-d3e1_4"></span></div>
+      <div class="ex-item"><span class="ex-num">5.</span><input type="text" id="d3e1_5" placeholder="Is he / Is she / Are they"><span class="ex-text">available? (Mariana) — Yes, she is.</span><button class="btn-check" onclick="checkOne('d3e1_5','is she')">✓</button><span class="feedback" id="fb-d3e1_5"></span></div>
+      <button class="btn-check-all" onclick="checkAll('d3-ex1')">✓ Checar Tudo</button>
+      <div class="score-box" id="score-d3-ex1"></div>
+    </div>
+  </div>
+
+  <div class="card card-navy">
+    <div class="card-title">Drill — This is Introductions</div>
+    <div class="ex-instruction">Apresente a pessoa e dê uma informação extra. Clique em 💡 para ver um exemplo-modelo.</div>
+    <div class="ex-block">
+      <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">(Ana - my colleague) →</span><input type="text" id="d3d1_1" placeholder="This is Ana. She is..." style="min-width:240px"><button class="btn-check" onclick="checkOpen('d3d1_1','This is Ana. She is my colleague.')">💡</button><span class="feedback" id="fb-d3d1_1"></span></div>
+      <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">(Pedro - new partner) →</span><input type="text" id="d3d1_2" placeholder="This is Pedro. He is..." style="min-width:240px"><button class="btn-check" onclick="checkOpen('d3d1_2','This is Pedro. He is the new partner.')">💡</button><span class="feedback" id="fb-d3d1_2"></span></div>
+      <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">(Mr. Souza and Mr. Silva - directors) →</span><input type="text" id="d3d1_3" placeholder="These are... They are..." style="min-width:240px"><button class="btn-check" onclick="checkOpen('d3d1_3','These are Mr. Souza and Mr. Silva. They are directors.')">💡</button><span class="feedback" id="fb-d3d1_3"></span></div>
+      <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">(The assistants - in training) →</span><input type="text" id="d3d1_4" placeholder="These are... They are..." style="min-width:240px"><button class="btn-check" onclick="checkOpen('d3d1_4','These are the assistants. They are in training.')">💡</button><span class="feedback" id="fb-d3d1_4"></span></div>
+      <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">(My clients - from the USA) →</span><input type="text" id="d3d1_5" placeholder="These are... They are..." style="min-width:240px"><button class="btn-check" onclick="checkOpen('d3d1_5','These are my clients. They are from the USA.')">💡</button><span class="feedback" id="fb-d3d1_5"></span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     DAY 4 — LISTENING
+══════════════════════════════════ -->
+<div class="day-panel" id="day-4">
+  <div class="day-hero day-hero-teal">
+    <div class="day-label">Day 4 · W2 Connection Hub</div>
+    <h1>🎧 Audio Practice</h1>
+    <p>Ouça 3 áudios do ambiente do agronegócio. Treine a compreensão auditiva — ouça antes de ler!</p>
+  </div>
+
+  <div class="card card-teal">
+    <div class="card-title">⚠️ Critical Rule — Antes de Começar</div>
+    <p style="font-size:.9rem;line-height:1.9"><strong>1ª escuta:</strong> Sem transcrição. Só ouça — tente entender o máximo que puder.<br><strong>2ª escuta:</strong> Responda as perguntas abaixo.<br><strong>3ª escuta:</strong> Shadow — repita exatamente ao mesmo tempo que o áudio.</p>
+  </div>
+
+  <!-- VOCAB DO DIA 4 -->
+  <div class="card card-teal">
+    <div class="card-title">📚 Vocabulário do Dia — 10 palavras dos áudios</div>
+    <div class="vocab-badge vocab-badge-teal">📖 Dia 4 de 5 · Palavras que você vai ouvir nos 3 áudios</div>
+    <div class="vocab-grid">
+      <div class="vocab-item vocab-item-teal"><span class="v-num">01</span><div class="v-word">morning briefing</div><div class="v-pt">reunião matinal / briefing</div><div class="v-ex">Áudio 1 — título</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">02</span><div class="v-word">client</div><div class="v-pt">cliente</div><div class="v-ex">She is with the client.</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">03</span><div class="v-word">project</div><div class="v-pt">projeto</div><div class="v-ex">He is ready for the project.</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">04</span><div class="v-word">in training</div><div class="v-pt">em treinamento</div><div class="v-ex">They are in training.</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">05</span><div class="v-word">fair</div><div class="v-pt">feira de negócios</div><div class="v-ex">Áudio 2 — at the fair</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">06</span><div class="v-word">partner</div><div class="v-pt">sócio / parceiro de negócios</div><div class="v-ex">He is a partner from the USA.</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">07</span><div class="v-word">representative</div><div class="v-pt">representante</div><div class="v-ex">They are representatives.</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">08</span><div class="v-word">headquarters</div><div class="v-pt">matriz / sede da empresa</div><div class="v-ex">They are from the headquarters.</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">09</span><div class="v-word">assistant</div><div class="v-pt">assistente</div><div class="v-ex">These are the assistants.</div></div>
+      <div class="vocab-item vocab-item-teal"><span class="v-num">10</span><div class="v-word">Welcome to...</div><div class="v-pt">Bem-vindo/a a...</div><div class="v-ex">Welcome to the farm!</div></div>
+    </div>
+  </div>
+
+  <div class="audio-card">
+    <div class="audio-card-title">🎙️ Áudio 1 — The Morning Briefing</div>
+    <div class="audio-steps">1ª escuta: Sem transcrição &nbsp;·&nbsp; 2ª escuta: Responda as perguntas &nbsp;·&nbsp; 3ª escuta: Shadow</div>
+    <a class="audio-btn" href="https://drive.google.com/file/d/10xR8psDMl1elfsNenXrQxXI2Es6ycJqW/view?usp=sharing" target="_blank">🎧 Abrir Áudio 1</a>
+    <div style="margin-top:18px">
+      <div class="ex-instruction">Responda após a 2ª escuta:</div>
+      <div class="ex-item"><span class="ex-text">1. Where is Laura?</span><input type="text" id="a1q1" placeholder="Sua resposta"><button class="btn-check" onclick="checkOne('a1q1','in the field')">✓</button><span class="feedback" id="fb-a1q1"></span></div>
+      <div class="ex-item"><span class="ex-text">2. Is Roberto ready?</span><input type="text" id="a1q2" placeholder="Yes / No"><button class="btn-check" onclick="checkOne('a1q2','yes')">✓</button><span class="feedback" id="fb-a1q2"></span></div>
+      <div class="ex-item"><span class="ex-text">3. Where are Carlos and Ana?</span><input type="text" id="a1q3" placeholder="Sua resposta"><button class="btn-check" onclick="checkOne('a1q3','at the branch')">✓</button><span class="feedback" id="fb-a1q3"></span></div>
+    </div>
+    <button class="script-toggle-btn" onclick="toggleScript('script-a1')">📄 Ver / Ocultar Transcrição</button>
+    <div class="script-box" id="script-a1">"Good morning team! I am Ricardo. Today is busy. Laura is in the field. She is with the client. Roberto is online. He is ready for the project. Carlos and Ana are at the branch. They are in training."</div>
+  </div>
+
+  <div class="audio-card">
+    <div class="audio-card-title">🎙️ Áudio 2 — New Partners at the Fair</div>
+    <div class="audio-steps">1ª escuta: Sem transcrição &nbsp;·&nbsp; 2ª escuta: Complete as lacunas &nbsp;·&nbsp; 3ª escuta: Shadow</div>
+    <a class="audio-btn" href="https://drive.google.com/file/d/1_-aA-4E-ov0zNmAY_A8GNu2erdAhItT_/view?usp=sharing" target="_blank">🎧 Abrir Áudio 2</a>
+    <div style="margin-top:18px">
+      <div class="ex-instruction">Complete após a 2ª escuta:</div>
+      <div class="ex-item"><span class="ex-text">This is ___</span><input type="text" id="a2q1" placeholder="nome"><button class="btn-check" onclick="checkOne('a2q1','mr. green')">✓</button><span class="feedback" id="fb-a2q1"></span></div>
+      <div class="ex-item"><span class="ex-text">He is a ___</span><input type="text" id="a2q2" placeholder="cargo"><button class="btn-check" onclick="checkOne('a2q2','partner')">✓</button><span class="feedback" id="fb-a2q2"></span></div>
+      <div class="ex-item"><span class="ex-text">___ are Julia and Marcos</span><input type="text" id="a2q3" placeholder="These / They"><button class="btn-check" onclick="checkOne('a2q3','these')">✓</button><span class="feedback" id="fb-a2q3"></span></div>
+      <div class="ex-item"><span class="ex-text">They are ___</span><input type="text" id="a2q4" placeholder="cargo"><button class="btn-check" onclick="checkOne('a2q4','representatives')">✓</button><span class="feedback" id="fb-a2q4"></span></div>
+      <div class="ex-item"><span class="ex-text">They are from ___</span><input type="text" id="a2q5" placeholder="local"><button class="btn-check" onclick="checkOne('a2q5','the headquarters')">✓</button><span class="feedback" id="fb-a2q5"></span></div>
+    </div>
+    <button class="script-toggle-btn" onclick="toggleScript('script-a2')">📄 Ver / Ocultar Transcrição</button>
+    <div class="script-box" id="script-a2">"Hello! I am Ana. This is my team. This is Mr. Green. He is a partner from the USA. These are Julia and Marcos. They are representatives. They are from the headquarters."</div>
+  </div>
+
+  <div class="audio-card">
+    <div class="audio-card-title">🎙️ Áudio 3 — The Farm Visit</div>
+    <div class="audio-steps">1ª escuta: Sem transcrição &nbsp;·&nbsp; 2ª escuta: Responda as perguntas &nbsp;·&nbsp; 3ª escuta: Shadow</div>
+    <a class="audio-btn" href="https://drive.google.com/file/d/1Cs7Bi-x13e2255lNMyj4qEXZGt8k92iu/view?usp=sharing" target="_blank">🎧 Abrir Áudio 3</a>
+    <div style="margin-top:18px">
+      <div class="ex-instruction">Responda após a 2ª escuta:</div>
+      <div class="ex-item"><span class="ex-text">1. What is Paulo's profession?</span><input type="text" id="a3q1" placeholder="Sua resposta"><button class="btn-check" onclick="checkOne('a3q1','veterinarian')">✓</button><span class="feedback" id="fb-a3q1"></span></div>
+      <div class="ex-item"><span class="ex-text">2. Where is Paulo right now?</span><input type="text" id="a3q2" placeholder="Sua resposta"><button class="btn-check" onclick="checkOne('a3q2','in the field')">✓</button><span class="feedback" id="fb-a3q2"></span></div>
+      <div class="ex-item"><span class="ex-text">3. Where are the assistants?</span><input type="text" id="a3q3" placeholder="Sua resposta"><button class="btn-check" onclick="checkOne('a3q3','in the office')">✓</button><span class="feedback" id="fb-a3q3"></span></div>
+      <div class="ex-item"><span class="ex-text">4. Are the assistants busy?</span><input type="text" id="a3q4" placeholder="Yes / No"><button class="btn-check" onclick="checkOne('a3q4','yes')">✓</button><span class="feedback" id="fb-a3q4"></span></div>
+    </div>
+    <button class="script-toggle-btn" onclick="toggleScript('script-a3')">📄 Ver / Ocultar Transcrição</button>
+    <div class="script-box" id="script-a3">"Welcome to the farm! I am the manager. This is Paulo. He is the veterinarian. He is in the field right now. These are the assistants. They are in the office. They are busy with the project."</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     DAY 5 — PRODUÇÃO LIVRE
+══════════════════════════════════ -->
+<div class="day-panel" id="day-5">
+  <div class="day-hero">
+    <div class="day-label">Day 5 · W2 Connection Hub</div>
+    <h1>🌟 Produção Livre</h1>
+    <p>Hoje você fala sobre situações reais. Use tudo que preparou essa semana — sua equipe, seus colegas, seu trabalho.</p>
+    <a class="video-btn" href="https://youtu.be/hoVUrxG1GBQ" target="_blank">▶ Assistir Vídeo — Dia 5</a>
+  </div>
+
+  <div class="card card-green">
+    <div class="card-title">🎯 Learning Outcomes — Day 5</div>
+    <ul class="outcomes-list">
+      <li>Produzir apresentações completas usando toda a W2: He is / She is / They are / This is / These are</li>
+      <li>Descrever sua equipe real com cargo, localização e disponibilidade</li>
+      <li>Chegar pronto para a aula de conversação com conteúdo real da sua vida profissional</li>
+    </ul>
+  </div>
+
+  <!-- VOCAB DO DIA 5 -->
+  <div class="card card-green">
+    <div class="card-title">📚 Vocabulário do Dia — 10 frases prontas para a aula</div>
+    <div class="vocab-badge">📖 Dia 5 de 5 · Chunks para usar na conversa com o professor</div>
+    <div class="vocab-grid">
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">01</span><div class="v-word">This is [name]. He/She is a [cargo].</div><div class="v-ex">Ao apresentar um colega individualmente</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">02</span><div class="v-word">These are [name] and [name]. They are [cargo].</div><div class="v-ex">Ao apresentar dois colegas juntos</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">03</span><div class="v-word">He/She is from [city/team].</div><div class="v-ex">Ao dar a origem ou equipe da pessoa</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">04</span><div class="v-word">He/She is busy, but he/she is ready.</div><div class="v-ex">Ao mostrar disponibilidade apesar de ocupado</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">05</span><div class="v-word">Is he/she available for the meeting?</div><div class="v-ex">Ao perguntar sobre disponibilidade</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">06</span><div class="v-word">No, he/she isn't. He/She is at the farm.</div><div class="v-ex">Ao informar que alguém não está disponível</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">07</span><div class="v-word">They are ready for the project.</div><div class="v-ex">Ao confirmar que a equipe está pronta</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">08</span><div class="v-word">He/She is our specialist.</div><div class="v-ex">Ao destacar a expertise de um colega</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">09</span><div class="v-word">They are from the [sales/technical/operations] team.</div><div class="v-ex">Ao indicar o departamento</div></div>
+      <div class="vocab-item vocab-item-chunk"><span class="v-num">10</span><div class="v-word">He/She is the right person for your project.</div><div class="v-ex">Ao recomendar um colega para um parceiro</div></div>
+    </div>
+  </div>
+
+  <div class="alert-box">💡 <strong>Dica:</strong> Não existe resposta errada aqui. O objetivo é você produzir frases reais sobre seu contexto de trabalho. Use IA para ajudar se precisar — e leia em voz alta depois!</div>
+
+  <div class="section-title">📸 Mini Project — The Team Photo</div>
+  <div class="card card-green">
+    <div class="card-title">Imagine uma foto da sua equipe. Descreva-a usando os padrões da semana.</div>
+    <p style="font-size:.88rem;color:var(--gray-700);margin-bottom:18px">Use os chunks do vocabulário de hoje: <strong>This is... / These are... / He/She is... / They are...</strong></p>
+
+    <div class="production-task">
+      <div class="task-label">Step 1 — Você</div>
+      <div class="task-instruction">Apresente-se: nome, cargo, equipe/departamento, cidade.</div>
+      <textarea id="prod-step1" placeholder="I am ___. I am the ___. I am from ___ [city]. I am from the ___ [team]."></textarea>
+      <button class="btn-show-model" onclick="showModel('model-step1')">💡 Ver exemplo</button>
+      <div class="example-model" id="model-step1">I am Fernanda. I am the operations coordinator. I am from Ribeirão Preto. I am from the technical team.</div>
+    </div>
+    <div class="production-task">
+      <div class="task-label">Step 2 — Um colega do sexo masculino</div>
+      <div class="task-instruction">Apresente um colega homem: nome, cargo, localização e status hoje.</div>
+      <textarea id="prod-step2" placeholder="This is ___. He is ___. He is from ___ [city]. He is from the ___ [team]. He is ___ today."></textarea>
+      <button class="btn-show-model" onclick="showModel('model-step2')">💡 Ver exemplo</button>
+      <div class="example-model" id="model-step2">This is Carlos. He is a veterinarian. He is from Cuiabá. He is from the operations team. He is in the field today, but he is ready for the project.</div>
+    </div>
+    <div class="production-task">
+      <div class="task-label">Step 3 — Uma colega do sexo feminino</div>
+      <div class="task-instruction">Apresente uma colega mulher: nome, cargo, status atual.</div>
+      <textarea id="prod-step3" placeholder="This is ___. She is ___. She is from ___ [city]. She is from the ___ [team]. She is ___ today."></textarea>
+      <button class="btn-show-model" onclick="showModel('model-step3')">💡 Ver exemplo</button>
+      <div class="example-model" id="model-step3">This is Laura. She is an agronomist. She is from Portugal. She is from the commercial team. She is busy today, but she is available for the meeting.</div>
+    </div>
+    <div class="production-task">
+      <div class="task-label">Step 4 — Sua equipe (They are)</div>
+      <div class="task-instruction">Apresente 2 ou 3 colegas juntos como equipe. Use "These are... They are..."</div>
+      <textarea id="prod-step4" placeholder="These are ___ and ___. They are ___. They are from ___ [city]. They are from the ___ [team]. They are ___ today."></textarea>
+      <button class="btn-show-model" onclick="showModel('model-step4')">💡 Ver exemplo</button>
+      <div class="example-model" id="model-step4">These are Carlos and Laura. They are my colleagues. They are agronomists. They are from the technical team. They are ready for the farm visit.</div>
+    </div>
+  </div>
+
+  <div class="section-title">🗣️ Perguntas para a Aula de Conversação</div>
+  <div class="card card-green">
+    <div class="card-title">Prepare suas respostas — o professor vai perguntar isso na aula!</div>
+    <div class="production-task">
+      <div class="task-label">1. Who is on your team right now?</div>
+      <div class="task-instruction">Fale sobre 2–3 pessoas da sua equipe real. Use He is / She is / They are.</div>
+      <textarea id="prod-q1" placeholder="On my team, there is... She is... He is... They are..."></textarea>
+      <button class="btn-show-model" onclick="showModel('model-q1')">💡 Ver exemplo</button>
+      <div class="example-model" id="model-q1">On my team, there is Ana. She is the sales coordinator. She is from Campinas. And there is Roberto. He is a field representative. He is busy today — he is at the farm.</div>
+    </div>
+    <div class="production-task">
+      <div class="task-label">2. Is your manager available right now? Where is he/she?</div>
+      <div class="task-instruction">Fale sobre a disponibilidade do seu gerente ou supervisor.</div>
+      <textarea id="prod-q2" placeholder="My manager is ___. He/She is ___. He/She is from ___. He/She is ___ today."></textarea>
+      <button class="btn-show-model" onclick="showModel('model-q2')">💡 Ver exemplo</button>
+      <div class="example-model" id="model-q2">My manager is Dr. Figueiredo. He is the operations director. He is not available right now — he is at a meeting in São Paulo. But he is online.</div>
+    </div>
+    <div class="production-task">
+      <div class="task-label">3. Introduce your best colleague to a foreign partner.</div>
+      <div class="task-instruction">Imagine que você está apresentando um colega a um parceiro internacional. Faça a apresentação completa.</div>
+      <textarea id="prod-q3" placeholder="This is [name]. He/She is a ___. He/She is from ___. He/She is ___ today."></textarea>
+      <button class="btn-show-model" onclick="showModel('model-q3')">💡 Ver exemplo</button>
+      <div class="example-model" id="model-q3">This is Mariana. She is our technical analyst. She is from Goiânia and she is from the crop protection team. She is our specialist — she is the right person for your project!</div>
+    </div>
+  </div>
+
+  <div class="card card-green" style="text-align:center;padding:28px">
+    <div style="font-size:2rem;margin-bottom:10px">🎯</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--green);margin-bottom:8px">Você está pronto para a aula de conversação!</div>
+    <p style="font-size:.9rem;color:var(--gray-600)">Leia suas respostas em voz alta 2x antes da aula. Fale com confiança — você preparou o conteúdo!</p>
+  </div>
+</div>
+
+
+<!-- ════ JS ════ -->
+<script>
+const ANSWERS = {
+  'd1e1_1':'he is','d1e1_2':'she is','d1e1_3':'she is','d1e1_4':'he is','d1e1_5':'she is','d1e1_6':'he is','d1e1_7':'he is',
+  'd1d1_1':'she is at the office','d1d1_2':'he is an engineer','d1d1_3':'she is from brazil',
+  'd1d1_4':'he is ready','d1d1_5':'she is on a business trip','d1d1_6':'he is a coordinator',
+  'd2e1_1':'this is','d2e1_2':'these are','d2e1_3':'this is','d2e1_4':'these are','d2e1_5':'this is',
+  'd2d2_1':'she is a coordinator. she is in the field',
+  'd2d2_2':'they are representatives. they are busy',
+  'd2d2_3':'she is an analyst. she is online',
+  'd2d2_4':'he is the director. he is at the branch',
+  'd2d2_5':'they are happy. they are at the conference',
+  'd2d3_1':'the manager is in a meeting',
+  'd2d3_2':'the new analyst is from the sales team',
+  'd2d3_3':'the partners are at the headquarters',
+  'd2d3_4':'the agronomist is in the field',
+  'd2d3_5':'mariana is online',
+  'd3e1_1':'is he','d3e1_2':'yes','d3e1_3':'are they','d3e1_4':'he','d3e1_5':'is she',
+  'a1q1':'in the field','a1q2':'yes','a1q3':'at the branch',
+  'a2q1':'mr. green','a2q2':'partner','a2q3':'these','a2q4':'representatives','a2q5':'the headquarters',
+  'a3q1':'veterinarian','a3q2':'in the field','a3q3':'in the office','a3q4':'yes',
+};
+const SETS = {
+  'd1-ex1':   ['d1e1_1','d1e1_2','d1e1_3','d1e1_4','d1e1_5','d1e1_6','d1e1_7'],
+  'd1-drill1':['d1d1_1','d1d1_2','d1d1_3','d1d1_4','d1d1_5','d1d1_6'],
+  'd2-ex1':   ['d2e1_1','d2e1_2','d2e1_3','d2e1_4','d2e1_5'],
+  'd2-drill2':['d2d2_1','d2d2_2','d2d2_3','d2d2_4','d2d2_5'],
+  'd2-drill3':['d2d3_1','d2d3_2','d2d3_3','d2d3_4','d2d3_5'],
+  'd3-ex1':   ['d3e1_1','d3e1_2','d3e1_3','d3e1_4','d3e1_5'],
+};
+const EMOJIS = ['😬','🙂','😊','🌟','🏆'];
+
+function showDay(n) {
+  document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('day-' + n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleScript(id){ const el=document.getElementById(id); el.style.display=el.style.display==='block'?'none':'block'; }
+function showModel(id){ const el=document.getElementById(id); el.style.display=el.style.display==='block'?'none':'block'; }
+
+function normalize(str){
+  return str.toLowerCase()
+    .replace(/[áàãâä]/g,'a').replace(/[éèêë]/g,'e')
+    .replace(/[íìîï]/g,'i').replace(/[óòõôö]/g,'o')
+    .replace(/[úùûü]/g,'u').replace(/[ç]/g,'c')
+    .replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,' ').trim();
+}
+function checkOne(inputId, correctRaw){
+  const input=document.getElementById(inputId);
+  const fb=document.getElementById('fb-'+inputId);
+  const user=normalize(input.value);
+  const key=normalize(correctRaw);
+  const parts=key.split('.').map(p=>p.trim()).filter(Boolean);
+  const ok=parts.length>1 ? parts.every(p=>user.includes(p)) : (user===key||user.includes(key));
+  input.style.borderColor=ok?'#16a34a':'#dc2626';
+  fb.textContent=ok?'✅ Correto!':'❌ '+correctRaw;
+  fb.className='feedback '+(ok?'correct':'wrong');
+}
+function checkOpen(inputId, modelText){
+  const fb=document.getElementById('fb-'+inputId);
+  fb.textContent='💡 Exemplo: '+modelText;
+  fb.className='feedback open';
+}
+function checkAll(setId){
+  const ids=SETS[setId]; if(!ids) return;
+  ids.forEach(id=>{ if(ANSWERS[id]) checkOne(id,ANSWERS[id]); });
+  const correct=ids.filter(id=>{ const fb=document.getElementById('fb-'+id); return fb&&fb.classList.contains('correct'); }).length;
+  const total=ids.length;
+  const pct=Math.round((correct/total)*100);
+  const emoji=EMOJIS[Math.min(Math.floor(pct/25),4)];
+  const box=document.getElementById('score-'+setId);
+  if(box){
+    box.style.display='block';
+    box.textContent=emoji+' '+correct+'/'+total+' corretas ('+pct+'%)';
+    box.style.color=pct>=80?'#166534':pct>=50?'#92400e':'#991b1b';
+    box.style.borderColor=pct>=80?'#16a34a':pct>=50?'#f59e0b':'#dc2626';
+  }
+}
+</script>
+</body>
+</html>
