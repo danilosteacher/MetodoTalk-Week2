@@ -77,36 +77,117 @@
   .outcomes-list li:last-child { border-bottom: none; }
   .outcomes-list li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
 
-  /* ── VOCAB CARDS GRID ── */
-  .vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media(max-width:600px){ .vocab-grid { grid-template-columns: 1fr; } }
+  /* ── FLASHCARD SYSTEM ── */
+  .fc-wrapper { margin-bottom: 20px; }
 
-  .vocab-item {
-    background: #fff; border-radius: var(--radius-sm);
-    padding: 14px 16px; border: 1px solid var(--gray-200);
-    border-left: 3px solid var(--green);
+  .voice-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .voice-label { font-size: .75rem; color: var(--gray-600); }
+  .voices-loading { font-size: .75rem; color: var(--gray-600); font-style: italic; }
+  .vbtn {
+    padding: 4px 12px; border-radius: 99px;
+    border: 1px solid var(--gray-200); background: transparent;
+    font-size: .75rem; color: var(--gray-600); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
   }
-  .vocab-item-teal  { border-left-color: var(--teal); }
-  .vocab-item-chunk { border-left-color: var(--navy); }
+  .vbtn:hover { background: var(--green-light); border-color: var(--green); }
+  .vbtn.active { background: var(--green-light); color: var(--green); border-color: var(--green); font-weight: 600; }
 
-  .vocab-item .v-num {
-    font-family: 'JetBrains Mono', monospace; font-size: .68rem;
-    font-weight: 700; color: var(--green); opacity: .7;
-    margin-bottom: 4px; display: block;
-  }
-  .vocab-item-teal  .v-num { color: var(--teal); }
-  .vocab-item-chunk .v-num { color: var(--navy); }
+  .fc-dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; }
+  .fc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-200); cursor: pointer; transition: all .2s; }
+  .fc-dot.active { background: var(--green); transform: scale(1.3); }
+  .fc-dot.done { background: var(--green); opacity: .4; }
 
-  .vocab-item .v-word {
-    font-weight: 700; font-size: .97rem; color: var(--gray-800); margin-bottom: 3px;
+  .fc-nav-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .fc-counter { font-size: .8rem; color: var(--gray-600); }
+  .fc-arrows { display: flex; gap: 6px; }
+  .fc-arrow {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--gray-200); background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all .15s;
   }
-  .vocab-item .v-pt { font-size: .82rem; color: var(--gray-600); margin-bottom: 5px; }
-  .vocab-item .v-ex {
-    font-family: 'JetBrains Mono', monospace; font-size: .78rem;
-    color: var(--green); font-style: italic;
+  .fc-arrow:hover { background: var(--green-light); border-color: var(--green); }
+  .fc-arrow svg { width: 14px; height: 14px; stroke: var(--gray-600); stroke-width: 2; fill: none; }
+
+  .flashcard {
+    background: #fff; border: 1px solid var(--gray-200);
+    border-radius: var(--radius); min-height: 230px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center;
+    padding: 28px 24px; gap: 10px; position: relative;
+    transition: border-color .2s, box-shadow .2s; user-select: none;
   }
-  .vocab-item-teal  .v-ex { color: var(--teal); }
-  .vocab-item-chunk .v-ex { color: var(--navy); font-style: normal; font-size: .8rem; }
+  .flashcard:hover { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,92,26,.07); }
+  .fc-side-label {
+    position: absolute; top: 12px; right: 14px;
+    font-size: .68rem; font-weight: 500; color: var(--gray-600);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .fc-front { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
+  .fc-front.hidden { display: none; }
+  .fc-back { display: none; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+  .fc-back.visible { display: flex; }
+
+  .fc-step-label { font-size: .72rem; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: .06em; }
+  .fc-word { font-family: 'DM Serif Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--gray-800); line-height: 1.2; }
+  .fc-ipa { font-size: .8rem; color: var(--gray-600); font-style: italic; }
+  .fc-hint { font-size: .75rem; color: var(--gray-600); margin-top: 4px; }
+
+  .audio-btns { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+  .abtn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 13px; border-radius: 99px;
+    border: 1px solid var(--gray-200); background: transparent;
+    font-size: .75rem; color: var(--gray-600); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .abtn:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .abtn.playing { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .abtn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; flex-shrink: 0; }
+  .spd-btn {
+    padding: 4px 10px; border-radius: 99px;
+    border: 1px solid var(--gray-200); background: transparent;
+    font-size: .7rem; color: var(--gray-600); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .spd-btn.active { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+  .fc-translation { font-family: 'DM Serif Display', serif; font-size: 1.25rem; font-weight: 600; color: var(--green); }
+  .fc-example {
+    font-size: .85rem; color: var(--gray-700); line-height: 1.6;
+    border-left: 3px solid var(--green); padding-left: 12px;
+    text-align: left; width: 100%; font-family: 'JetBrains Mono', monospace;
+  }
+  .fc-example-pt { font-size: .78rem; color: var(--gray-600); padding-left: 15px; text-align: left; width: 100%; font-style: italic; }
+  .fc-why {
+    font-size: .75rem; background: var(--green-light); color: var(--green);
+    padding: 5px 14px; border-radius: 99px; margin-top: 4px;
+  }
+
+  /* teal variant para dia 4 */
+  .fc-teal .flashcard:hover { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(26,74,74,.07); }
+  .fc-teal .fc-step-label { color: var(--teal); }
+  .fc-teal .fc-dot.active { background: var(--teal); }
+  .fc-teal .fc-dot.done { background: var(--teal); }
+  .fc-teal .vbtn:hover,.fc-teal .vbtn.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+  .fc-teal .abtn:hover,.fc-teal .abtn.playing { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+  .fc-teal .spd-btn.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+  .fc-teal .fc-translation { color: var(--teal); }
+  .fc-teal .fc-example { border-left-color: var(--teal); }
+  .fc-teal .fc-why { background: var(--teal-light); color: var(--teal); }
+  .fc-teal .fc-arrow:hover { background: var(--teal-light); border-color: var(--teal); }
+
+  /* navy variant para dia 5 (chunks) */
+  .fc-navy .flashcard:hover { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(26,42,92,.07); }
+  .fc-navy .fc-step-label { color: var(--navy); }
+  .fc-navy .fc-dot.active { background: var(--navy); }
+  .fc-navy .fc-dot.done { background: var(--navy); }
+  .fc-navy .vbtn:hover,.fc-navy .vbtn.active { background: var(--navy-light); border-color: var(--navy); color: var(--navy); }
+  .fc-navy .abtn:hover,.fc-navy .abtn.playing { background: var(--navy-light); border-color: var(--navy); color: var(--navy); }
+  .fc-navy .spd-btn.active { background: var(--navy-light); border-color: var(--navy); color: var(--navy); }
+  .fc-navy .fc-translation { color: var(--navy); }
+  .fc-navy .fc-example { border-left-color: var(--navy); }
+  .fc-navy .fc-why { background: var(--navy-light); color: var(--navy); }
 
   .phrase-row { background: #fff; border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 8px; border: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .phrase-en { font-family: 'JetBrains Mono', monospace; font-size: .88rem; font-weight: 600; color: var(--navy); }
@@ -218,18 +299,53 @@
   <!-- VOCAB DO DIA 1 -->
   <div class="card card-green">
     <div class="card-title">📚 Vocabulário do Dia — 10 palavras & expressões</div>
-    <div class="vocab-badge">📖 Dia 1 de 5 · Profissões & Localizações essenciais</div>
-    <div class="vocab-grid">
-      <div class="vocab-item"><span class="v-num">01</span><div class="v-word">agronomist</div><div class="v-pt">agrônomo / agrônoma</div><div class="v-ex">She is an agronomist.</div></div>
-      <div class="vocab-item"><span class="v-num">02</span><div class="v-word">veterinarian</div><div class="v-pt">veterinário / veterinária</div><div class="v-ex">He is a veterinarian.</div></div>
-      <div class="vocab-item"><span class="v-num">03</span><div class="v-word">sales manager</div><div class="v-pt">gerente de vendas</div><div class="v-ex">He is the sales manager.</div></div>
-      <div class="vocab-item"><span class="v-num">04</span><div class="v-word">coordinator</div><div class="v-pt">coordenador / coordenadora</div><div class="v-ex">She is a coordinator.</div></div>
-      <div class="vocab-item"><span class="v-num">05</span><div class="v-word">at the farm</div><div class="v-pt">na fazenda</div><div class="v-ex">He is at the farm today.</div></div>
-      <div class="vocab-item"><span class="v-num">06</span><div class="v-word">at the office</div><div class="v-pt">no escritório</div><div class="v-ex">She is at the office.</div></div>
-      <div class="vocab-item"><span class="v-num">07</span><div class="v-word">in the field</div><div class="v-pt">no campo</div><div class="v-ex">He is in the field.</div></div>
-      <div class="vocab-item"><span class="v-num">08</span><div class="v-word">busy</div><div class="v-pt">ocupado / ocupada</div><div class="v-ex">She is busy right now.</div></div>
-      <div class="vocab-item"><span class="v-num">09</span><div class="v-word">ready</div><div class="v-pt">pronto / pronta</div><div class="v-ex">He is ready for the meeting.</div></div>
-      <div class="vocab-item"><span class="v-num">10</span><div class="v-word">This is</div><div class="v-pt">Este/Esta é — para apresentar alguém</div><div class="v-ex">This is Ana. She is an agronomist.</div></div>
+    <p style="font-size:.82rem;color:var(--gray-600);margin-bottom:14px">Ouça o termo antes de virar o card. No verso, ouça a frase completa em contexto.</p>
+    <div class="fc-wrapper" id="fc-d1">
+      <div class="voice-row">
+        <span class="voice-label">Voz:</span>
+        <span class="voices-loading" id="v-loading-d1">Carregando vozes...</span>
+        <div id="v-btns-d1" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="fc-dots" id="fc-dots-d1"></div>
+      <div class="fc-nav-row">
+        <span class="fc-counter" id="fc-counter-d1">1 de 10</span>
+        <div class="fc-arrows">
+          <button class="fc-arrow" onclick="fcNav('d1',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button class="fc-arrow" onclick="fcNav('d1',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
+      <div class="flashcard" onclick="handleCardClick(event,'d1')">
+        <div class="fc-front" id="fc-front-d1">
+          <div class="fc-side-label">Toque para ver a tradução</div>
+          <div class="fc-step-label" id="fc-step-d1"></div>
+          <div class="fc-word" id="fc-word-d1"></div>
+          <div class="fc-ipa" id="fc-ipa-d1"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-word-d1" onclick="sayWord('d1')">
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Ouvir termo
+            </button>
+            <button class="spd-btn active" id="spd1-d1" onclick="setSpd('d1',1,event)">1×</button>
+            <button class="spd-btn" id="spd07-d1" onclick="setSpd('d1',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-hint">Toque para ver tradução e uso real</div>
+        </div>
+        <div class="fc-back" id="fc-back-d1">
+          <div class="fc-side-label">Tradução e uso real</div>
+          <div class="fc-translation" id="fc-trans-d1"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-ex-d1" onclick="sayEx('d1')">
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Ouvir frase
+            </button>
+            <button class="spd-btn active" id="exspd1-d1" onclick="setExSpd('d1',1,event)">1×</button>
+            <button class="spd-btn" id="exspd07-d1" onclick="setExSpd('d1',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-example" id="fc-ex-d1"></div>
+          <div class="fc-example-pt" id="fc-ex-pt-d1"></div>
+          <div class="fc-why" id="fc-why-d1"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -332,18 +448,47 @@
   <!-- VOCAB DO DIA 2 -->
   <div class="card card-green">
     <div class="card-title">📚 Vocabulário do Dia — 10 palavras & expressões</div>
-    <div class="vocab-badge">📖 Dia 2 de 5 · Mais profissões, localizações & contrações</div>
-    <div class="vocab-grid">
-      <div class="vocab-item"><span class="v-num">01</span><div class="v-word">technical analyst</div><div class="v-pt">analista técnico/a</div><div class="v-ex">She is a technical analyst.</div></div>
-      <div class="vocab-item"><span class="v-num">02</span><div class="v-word">field representative</div><div class="v-pt">representante de campo</div><div class="v-ex">He is a field representative.</div></div>
-      <div class="vocab-item"><span class="v-num">03</span><div class="v-word">consultant</div><div class="v-pt">consultor / consultora</div><div class="v-ex">He is a consultant.</div></div>
-      <div class="vocab-item"><span class="v-num">04</span><div class="v-word">director</div><div class="v-pt">diretor / diretora</div><div class="v-ex">She is the director.</div></div>
-      <div class="vocab-item"><span class="v-num">05</span><div class="v-word">at the branch</div><div class="v-pt">na filial</div><div class="v-ex">He is at the branch today.</div></div>
-      <div class="vocab-item"><span class="v-num">06</span><div class="v-word">at the headquarters</div><div class="v-pt">na matriz / sede</div><div class="v-ex">They are at the headquarters.</div></div>
-      <div class="vocab-item"><span class="v-num">07</span><div class="v-word">available</div><div class="v-pt">disponível</div><div class="v-ex">She is available for the meeting.</div></div>
-      <div class="vocab-item"><span class="v-num">08</span><div class="v-word">in training</div><div class="v-pt">em treinamento</div><div class="v-ex">They are in training.</div></div>
-      <div class="vocab-item"><span class="v-num">09</span><div class="v-word">These are</div><div class="v-pt">Estes/Estas são — para 2+ pessoas</div><div class="v-ex">These are Ana and Pedro.</div></div>
-      <div class="vocab-item"><span class="v-num">10</span><div class="v-word">They are / They're</div><div class="v-pt">Eles/Elas são / estão</div><div class="v-ex">They are agronomists. They're ready.</div></div>
+    <p style="font-size:.82rem;color:var(--gray-600);margin-bottom:14px">Ouça o termo antes de virar o card. No verso, ouça a frase completa em contexto.</p>
+    <div class="fc-wrapper" id="fc-d2">
+      <div class="voice-row">
+        <span class="voice-label">Voz:</span>
+        <span class="voices-loading" id="v-loading-d2">Carregando vozes...</span>
+        <div id="v-btns-d2" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="fc-dots" id="fc-dots-d2"></div>
+      <div class="fc-nav-row">
+        <span class="fc-counter" id="fc-counter-d2">1 de 10</span>
+        <div class="fc-arrows">
+          <button class="fc-arrow" onclick="fcNav('d2',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button class="fc-arrow" onclick="fcNav('d2',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
+      <div class="flashcard" onclick="handleCardClick(event,'d2')">
+        <div class="fc-front" id="fc-front-d2">
+          <div class="fc-side-label">Toque para ver a tradução</div>
+          <div class="fc-step-label" id="fc-step-d2"></div>
+          <div class="fc-word" id="fc-word-d2"></div>
+          <div class="fc-ipa" id="fc-ipa-d2"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-word-d2" onclick="sayWord('d2')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Ouvir termo</button>
+            <button class="spd-btn active" id="spd1-d2" onclick="setSpd('d2',1,event)">1×</button>
+            <button class="spd-btn" id="spd07-d2" onclick="setSpd('d2',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-hint">Toque para ver tradução e uso real</div>
+        </div>
+        <div class="fc-back" id="fc-back-d2">
+          <div class="fc-side-label">Tradução e uso real</div>
+          <div class="fc-translation" id="fc-trans-d2"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-ex-d2" onclick="sayEx('d2')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Ouvir frase</button>
+            <button class="spd-btn active" id="exspd1-d2" onclick="setExSpd('d2',1,event)">1×</button>
+            <button class="spd-btn" id="exspd07-d2" onclick="setExSpd('d2',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-example" id="fc-ex-d2"></div>
+          <div class="fc-example-pt" id="fc-ex-pt-d2"></div>
+          <div class="fc-why" id="fc-why-d2"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -462,18 +607,47 @@
   <!-- VOCAB DO DIA 3 -->
   <div class="card card-green">
     <div class="card-title">📚 Vocabulário do Dia — 10 expressões de comunicação</div>
-    <div class="vocab-badge">📖 Dia 3 de 5 · Perguntas, respostas curtas & conectores</div>
-    <div class="vocab-grid">
-      <div class="vocab-item"><span class="v-num">01</span><div class="v-word">Is he...?</div><div class="v-pt">Ele é / está...?</div><div class="v-ex">Is he the manager?</div></div>
-      <div class="vocab-item"><span class="v-num">02</span><div class="v-word">Is she...?</div><div class="v-pt">Ela é / está...?</div><div class="v-ex">Is she at the farm?</div></div>
-      <div class="vocab-item"><span class="v-num">03</span><div class="v-word">Are they...?</div><div class="v-pt">Eles/Elas são / estão...?</div><div class="v-ex">Are they available?</div></div>
-      <div class="vocab-item"><span class="v-num">04</span><div class="v-word">Yes, he is.</div><div class="v-pt">Sim, ele é / está.</div><div class="v-ex">Is he ready? Yes, he is.</div></div>
-      <div class="vocab-item"><span class="v-num">05</span><div class="v-word">Yes, she is.</div><div class="v-pt">Sim, ela é / está.</div><div class="v-ex">Is she the analyst? Yes, she is.</div></div>
-      <div class="vocab-item"><span class="v-num">06</span><div class="v-word">No, he isn't.</div><div class="v-pt">Não, ele não é / está.</div><div class="v-ex">Is he at the office? No, he isn't.</div></div>
-      <div class="vocab-item"><span class="v-num">07</span><div class="v-word">No, they aren't.</div><div class="v-pt">Não, eles/elas não são / estão.</div><div class="v-ex">Are they ready? No, they aren't.</div></div>
-      <div class="vocab-item"><span class="v-num">08</span><div class="v-word">and</div><div class="v-pt">e — para adicionar informação</div><div class="v-ex">She is busy and she is at the farm.</div></div>
-      <div class="vocab-item"><span class="v-num">09</span><div class="v-word">but</div><div class="v-pt">mas — para contrastar</div><div class="v-ex">He is busy, but he is ready.</div></div>
-      <div class="vocab-item"><span class="v-num">10</span><div class="v-word">on a business trip</div><div class="v-pt">em viagem de trabalho</div><div class="v-ex">She is on a business trip today.</div></div>
+    <p style="font-size:.82rem;color:var(--gray-600);margin-bottom:14px">Ouça o termo antes de virar o card. No verso, ouça a frase completa em contexto.</p>
+    <div class="fc-wrapper" id="fc-d3">
+      <div class="voice-row">
+        <span class="voice-label">Voz:</span>
+        <span class="voices-loading" id="v-loading-d3">Carregando vozes...</span>
+        <div id="v-btns-d3" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="fc-dots" id="fc-dots-d3"></div>
+      <div class="fc-nav-row">
+        <span class="fc-counter" id="fc-counter-d3">1 de 10</span>
+        <div class="fc-arrows">
+          <button class="fc-arrow" onclick="fcNav('d3',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button class="fc-arrow" onclick="fcNav('d3',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
+      <div class="flashcard" onclick="handleCardClick(event,'d3')">
+        <div class="fc-front" id="fc-front-d3">
+          <div class="fc-side-label">Toque para ver a tradução</div>
+          <div class="fc-step-label" id="fc-step-d3"></div>
+          <div class="fc-word" id="fc-word-d3"></div>
+          <div class="fc-ipa" id="fc-ipa-d3"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-word-d3" onclick="sayWord('d3')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Ouvir termo</button>
+            <button class="spd-btn active" id="spd1-d3" onclick="setSpd('d3',1,event)">1×</button>
+            <button class="spd-btn" id="spd07-d3" onclick="setSpd('d3',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-hint">Toque para ver tradução e uso real</div>
+        </div>
+        <div class="fc-back" id="fc-back-d3">
+          <div class="fc-side-label">Tradução e uso real</div>
+          <div class="fc-translation" id="fc-trans-d3"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-ex-d3" onclick="sayEx('d3')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Ouvir frase</button>
+            <button class="spd-btn active" id="exspd1-d3" onclick="setExSpd('d3',1,event)">1×</button>
+            <button class="spd-btn" id="exspd07-d3" onclick="setExSpd('d3',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-example" id="fc-ex-d3"></div>
+          <div class="fc-example-pt" id="fc-ex-pt-d3"></div>
+          <div class="fc-why" id="fc-why-d3"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -572,18 +746,47 @@
   <!-- VOCAB DO DIA 4 -->
   <div class="card card-teal">
     <div class="card-title">📚 Vocabulário do Dia — 10 palavras dos áudios</div>
-    <div class="vocab-badge vocab-badge-teal">📖 Dia 4 de 5 · Palavras que você vai ouvir nos 3 áudios</div>
-    <div class="vocab-grid">
-      <div class="vocab-item vocab-item-teal"><span class="v-num">01</span><div class="v-word">morning briefing</div><div class="v-pt">reunião matinal / briefing</div><div class="v-ex">Áudio 1 — título</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">02</span><div class="v-word">client</div><div class="v-pt">cliente</div><div class="v-ex">She is with the client.</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">03</span><div class="v-word">project</div><div class="v-pt">projeto</div><div class="v-ex">He is ready for the project.</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">04</span><div class="v-word">in training</div><div class="v-pt">em treinamento</div><div class="v-ex">They are in training.</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">05</span><div class="v-word">fair</div><div class="v-pt">feira de negócios</div><div class="v-ex">Áudio 2 — at the fair</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">06</span><div class="v-word">partner</div><div class="v-pt">sócio / parceiro de negócios</div><div class="v-ex">He is a partner from the USA.</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">07</span><div class="v-word">representative</div><div class="v-pt">representante</div><div class="v-ex">They are representatives.</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">08</span><div class="v-word">headquarters</div><div class="v-pt">matriz / sede da empresa</div><div class="v-ex">They are from the headquarters.</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">09</span><div class="v-word">assistant</div><div class="v-pt">assistente</div><div class="v-ex">These are the assistants.</div></div>
-      <div class="vocab-item vocab-item-teal"><span class="v-num">10</span><div class="v-word">Welcome to...</div><div class="v-pt">Bem-vindo/a a...</div><div class="v-ex">Welcome to the farm!</div></div>
+    <p style="font-size:.82rem;color:var(--teal);opacity:.8;margin-bottom:14px">Estude estas palavras antes de ouvir os áudios — você vai reconhecê-las na escuta.</p>
+    <div class="fc-wrapper fc-teal" id="fc-d4">
+      <div class="voice-row">
+        <span class="voice-label">Voz:</span>
+        <span class="voices-loading" id="v-loading-d4">Carregando vozes...</span>
+        <div id="v-btns-d4" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="fc-dots" id="fc-dots-d4"></div>
+      <div class="fc-nav-row">
+        <span class="fc-counter" id="fc-counter-d4">1 de 10</span>
+        <div class="fc-arrows">
+          <button class="fc-arrow" onclick="fcNav('d4',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button class="fc-arrow" onclick="fcNav('d4',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
+      <div class="flashcard" onclick="handleCardClick(event,'d4')">
+        <div class="fc-front" id="fc-front-d4">
+          <div class="fc-side-label">Toque para ver a tradução</div>
+          <div class="fc-step-label" id="fc-step-d4"></div>
+          <div class="fc-word" id="fc-word-d4"></div>
+          <div class="fc-ipa" id="fc-ipa-d4"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-word-d4" onclick="sayWord('d4')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Ouvir termo</button>
+            <button class="spd-btn active" id="spd1-d4" onclick="setSpd('d4',1,event)">1×</button>
+            <button class="spd-btn" id="spd07-d4" onclick="setSpd('d4',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-hint">Toque para ver tradução e uso real</div>
+        </div>
+        <div class="fc-back" id="fc-back-d4">
+          <div class="fc-side-label">Tradução e uso real</div>
+          <div class="fc-translation" id="fc-trans-d4"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-ex-d4" onclick="sayEx('d4')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Ouvir frase</button>
+            <button class="spd-btn active" id="exspd1-d4" onclick="setExSpd('d4',1,event)">1×</button>
+            <button class="spd-btn" id="exspd07-d4" onclick="setExSpd('d4',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-example" id="fc-ex-d4"></div>
+          <div class="fc-example-pt" id="fc-ex-pt-d4"></div>
+          <div class="fc-why" id="fc-why-d4"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -655,19 +858,48 @@
 
   <!-- VOCAB DO DIA 5 -->
   <div class="card card-green">
-    <div class="card-title">📚 Vocabulário do Dia — 10 frases prontas para a aula</div>
-    <div class="vocab-badge">📖 Dia 5 de 5 · Chunks para usar na conversa com o professor</div>
-    <div class="vocab-grid">
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">01</span><div class="v-word">This is [name]. He/She is a [cargo].</div><div class="v-ex">Ao apresentar um colega individualmente</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">02</span><div class="v-word">These are [name] and [name]. They are [cargo].</div><div class="v-ex">Ao apresentar dois colegas juntos</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">03</span><div class="v-word">He/She is from [city/team].</div><div class="v-ex">Ao dar a origem ou equipe da pessoa</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">04</span><div class="v-word">He/She is busy, but he/she is ready.</div><div class="v-ex">Ao mostrar disponibilidade apesar de ocupado</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">05</span><div class="v-word">Is he/she available for the meeting?</div><div class="v-ex">Ao perguntar sobre disponibilidade</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">06</span><div class="v-word">No, he/she isn't. He/She is at the farm.</div><div class="v-ex">Ao informar que alguém não está disponível</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">07</span><div class="v-word">They are ready for the project.</div><div class="v-ex">Ao confirmar que a equipe está pronta</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">08</span><div class="v-word">He/She is our specialist.</div><div class="v-ex">Ao destacar a expertise de um colega</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">09</span><div class="v-word">They are from the [sales/technical/operations] team.</div><div class="v-ex">Ao indicar o departamento</div></div>
-      <div class="vocab-item vocab-item-chunk"><span class="v-num">10</span><div class="v-word">He/She is the right person for your project.</div><div class="v-ex">Ao recomendar um colega para um parceiro</div></div>
+    <div class="card-title">📚 Vocabulário do Dia — 10 chunks para a aula</div>
+    <p style="font-size:.82rem;color:var(--gray-600);margin-bottom:14px">Ouça cada chunk antes de virar o card. No verso, veja quando e como usar na aula de conversação.</p>
+    <div class="fc-wrapper fc-navy" id="fc-d5">
+      <div class="voice-row">
+        <span class="voice-label">Voz:</span>
+        <span class="voices-loading" id="v-loading-d5">Carregando vozes...</span>
+        <div id="v-btns-d5" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="fc-dots" id="fc-dots-d5"></div>
+      <div class="fc-nav-row">
+        <span class="fc-counter" id="fc-counter-d5">1 de 10</span>
+        <div class="fc-arrows">
+          <button class="fc-arrow" onclick="fcNav('d5',-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button class="fc-arrow" onclick="fcNav('d5',1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
+      <div class="flashcard" onclick="handleCardClick(event,'d5')">
+        <div class="fc-front" id="fc-front-d5">
+          <div class="fc-side-label">Toque para ver quando usar</div>
+          <div class="fc-step-label" id="fc-step-d5"></div>
+          <div class="fc-word" id="fc-word-d5"></div>
+          <div class="fc-ipa" id="fc-ipa-d5"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-word-d5" onclick="sayWord('d5')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Ouvir chunk</button>
+            <button class="spd-btn active" id="spd1-d5" onclick="setSpd('d5',1,event)">1×</button>
+            <button class="spd-btn" id="spd07-d5" onclick="setSpd('d5',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-hint">Toque para ver como usar na aula</div>
+        </div>
+        <div class="fc-back" id="fc-back-d5">
+          <div class="fc-side-label">Quando usar</div>
+          <div class="fc-translation" id="fc-trans-d5"></div>
+          <div class="audio-btns" onclick="event.stopPropagation()">
+            <button class="abtn" id="abtn-ex-d5" onclick="sayEx('d5')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Ouvir exemplo</button>
+            <button class="spd-btn active" id="exspd1-d5" onclick="setExSpd('d5',1,event)">1×</button>
+            <button class="spd-btn" id="exspd07-d5" onclick="setExSpd('d5',0.7,event)">0.7×</button>
+          </div>
+          <div class="fc-example" id="fc-ex-d5"></div>
+          <div class="fc-example-pt" id="fc-ex-pt-d5"></div>
+          <div class="fc-why" id="fc-why-d5"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -744,6 +976,224 @@
 
 <!-- ════ JS ════ -->
 <script>
+// ═══════════════════════════════════════════════
+// FLASHCARD DATA — W2 Connection Hub
+// ═══════════════════════════════════════════════
+const CARDS = {
+  d1: [
+    { step:'01 / 10', word:'agronomist', ipa:'/ˌæɡrəˈnɒmɪst/', trans:'agrônomo / agrônoma', ex:'She is an agronomist.', pt:'Ela é agrônoma.', why:'Profissão mais comum no agro brasileiro — essencial para apresentações' },
+    { step:'02 / 10', word:'veterinarian', ipa:'/ˌvetərɪˈneəriən/', trans:'veterinário / veterinária', ex:'He is a veterinarian.', pt:'Ele é veterinário.', why:'Cargo-chave em operações de pecuária e integração' },
+    { step:'03 / 10', word:'sales manager', ipa:'/ˈseɪlz ˈmænɪdʒər/', trans:'gerente de vendas', ex:'He is the sales manager.', pt:'Ele é o gerente de vendas.', why:'Título usado em reuniões com distribuidores e exportadores' },
+    { step:'04 / 10', word:'coordinator', ipa:'/kəʊˈɔːrdɪneɪtər/', trans:'coordenador / coordenadora', ex:'She is a coordinator.', pt:'Ela é coordenadora.', why:'Cargo frequente em equipes de campo e logística do agro' },
+    { step:'05 / 10', word:'at the farm', ipa:'/æt ðə fɑːrm/', trans:'na fazenda', ex:'He is at the farm today.', pt:'Ele está na fazenda hoje.', why:'Localização mais citada no agro — indispensável para reportar disponibilidade' },
+    { step:'06 / 10', word:'at the office', ipa:'/æt ðɪ ˈɒfɪs/', trans:'no escritório', ex:'She is at the office.', pt:'Ela está no escritório.', why:'Contraposição clássica com at the farm em conversas de equipe' },
+    { step:'07 / 10', word:'in the field', ipa:'/ɪn ðə fiːld/', trans:'no campo', ex:'He is in the field.', pt:'Ele está no campo.', why:'Expressão usada por técnicos e representantes durante visitas' },
+    { step:'08 / 10', word:'busy', ipa:'/ˈbɪzi/', trans:'ocupado / ocupada', ex:'She is busy right now.', pt:'Ela está ocupada agora.', why:'Status mais comum em briefings de equipe — sempre usado com but he/she is ready' },
+    { step:'09 / 10', word:'ready', ipa:'/ˈredi/', trans:'pronto / pronta', ex:'He is ready for the meeting.', pt:'Ele está pronto para a reunião.', why:'Palavra-chave para confirmar disponibilidade em apresentações profissionais' },
+    { step:'10 / 10', word:'This is', ipa:'/ðɪs ɪz/', trans:'Este/Esta é — para apresentar alguém', ex:'This is Ana. She is an agronomist.', pt:'Esta é a Ana. Ela é agrônoma.', why:'Fórmula obrigatória em qualquer apresentação de equipe para parceiros internacionais' },
+  ],
+  d2: [
+    { step:'01 / 10', word:'technical analyst', ipa:'/ˈteknɪkl ˈænəlɪst/', trans:'analista técnico/a', ex:'She is a technical analyst.', pt:'Ela é analista técnica.', why:'Cargo presente em distribuidoras e empresas de defensivos agrícolas' },
+    { step:'02 / 10', word:'field representative', ipa:'/fiːld ˌreprɪˈzentətɪv/', trans:'representante de campo', ex:'He is a field representative.', pt:'Ele é representante de campo.', why:'Profissional que visita produtores — muito citado em calls com integradores' },
+    { step:'03 / 10', word:'consultant', ipa:'/kənˈsʌltənt/', trans:'consultor / consultora', ex:'He is a consultant.', pt:'Ele é consultor.', why:'Título comum em projetos de sustentabilidade e certificações de exportação' },
+    { step:'04 / 10', word:'director', ipa:'/daɪˈrektər/', trans:'diretor / diretora', ex:'She is the director.', pt:'Ela é a diretora.', why:'Usado ao apresentar liderança para parceiros e investidores estrangeiros' },
+    { step:'05 / 10', word:'at the branch', ipa:'/æt ðə brɑːntʃ/', trans:'na filial', ex:'He is at the branch today.', pt:'Ele está na filial hoje.', why:'Localização comum em redes de distribuidoras agrícolas regionais' },
+    { step:'06 / 10', word:'at the headquarters', ipa:'/æt ðə ˈhedkwɔːrtərz/', trans:'na sede / matriz', ex:'They are at the headquarters.', pt:'Eles estão na sede.', why:'Essencial ao falar com parceiros internacionais sobre onde está a liderança' },
+    { step:'07 / 10', word:'available', ipa:'/əˈveɪləbl/', trans:'disponível', ex:'She is available for the meeting.', pt:'Ela está disponível para a reunião.', why:'Palavra-chave em agendamentos e confirmações com clientes internacionais' },
+    { step:'08 / 10', word:'in training', ipa:'/ɪn ˈtreɪnɪŋ/', trans:'em treinamento', ex:'They are in training.', pt:'Eles estão em treinamento.', why:'Status frequente durante onboarding de equipes em empresas do agro' },
+    { step:'09 / 10', word:'These are', ipa:'/ðiːz ɑːr/', trans:'Estes/Estas são — para 2+ pessoas', ex:'These are Ana and Pedro.', pt:'Estes são Ana e Pedro.', why:'Diferencial do This is — usado ao apresentar grupos para parceiros internacionais' },
+    { step:'10 / 10', word:"They are / They're", ipa:'/ðeɪ ɑːr/', trans:'Eles/Elas são / estão', ex:"They are agronomists. They're ready.", pt:'Eles são agrônomos. Eles estão prontos.', why:'Pronome de grupo — mais comum do que he/she em contextos de equipe' },
+  ],
+  d3: [
+    { step:'01 / 10', word:'Is he...?', ipa:'/ɪz hiː/', trans:'Ele é / está...?', ex:'Is he the manager?', pt:'Ele é o gerente?', why:'Pergunta-base para confirmar cargo ou status de um colega masculino' },
+    { step:'02 / 10', word:'Is she...?', ipa:'/ɪz ʃiː/', trans:'Ela é / está...?', ex:'Is she at the farm?', pt:'Ela está na fazenda?', why:'Mesma estrutura de Is he — troca apenas o pronome pelo gênero' },
+    { step:'03 / 10', word:'Are they...?', ipa:'/ɑːr ðeɪ/', trans:'Eles/Elas são / estão...?', ex:'Are they available?', pt:'Eles estão disponíveis?', why:'Pergunta sobre grupos — fundamental em briefings de equipe com parceiros' },
+    { step:'04 / 10', word:'Yes, he is.', ipa:'/jes hiː ɪz/', trans:'Sim, ele é / está.', ex:'Is he ready? Yes, he is.', pt:'Ele está pronto? Sim, ele está.', why:'Short answer — resposta profissional sem repetir a frase inteira' },
+    { step:'05 / 10', word:'Yes, she is.', ipa:'/jes ʃiː ɪz/', trans:'Sim, ela é / está.', ex:'Is she the analyst? Yes, she is.', pt:'Ela é a analista? Sim, ela é.', why:'Confirmação feminina — essencial para respostas curtas em conversas rápidas' },
+    { step:'06 / 10', word:"No, he isn't.", ipa:"/nəʊ hiː ˈɪznt/", trans:'Não, ele não é / está.', ex:"Is he at the office? No, he isn't.", pt:'Ele está no escritório? Não, ele não está.', why:"isn't = is not — contração obrigatória em inglês falado" },
+    { step:'07 / 10', word:"No, they aren't.", ipa:"/nəʊ ðeɪ ˈɑːrnt/", trans:'Não, eles/elas não são / estão.', ex:"Are they ready? No, they aren't.", pt:'Eles estão prontos? Não, eles não estão.', why:"aren't = are not — sempre mais natural que a forma longa em conversas" },
+    { step:'08 / 10', word:'and', ipa:'/ænd/', trans:'e — para adicionar informação', ex:'She is busy and she is at the farm.', pt:'Ela está ocupada e ela está na fazenda.', why:'Conector mais simples — une duas informações positivas sobre a mesma pessoa' },
+    { step:'09 / 10', word:'but', ipa:'/bʌt/', trans:'mas — para contrastar', ex:'He is busy, but he is ready.', pt:'Ele está ocupado, mas ele está pronto.', why:'Cria contraste — essencial para comunicar disponibilidade apesar de ocupado' },
+    { step:'10 / 10', word:'on a business trip', ipa:'/ɒn ə ˈbɪznəs trɪp/', trans:'em viagem de trabalho', ex:'She is on a business trip today.', pt:'Ela está em viagem de trabalho hoje.', why:'Expressão completa — nunca diga apenas "in a trip" em inglês profissional' },
+  ],
+  d4: [
+    { step:'01 / 10', word:'morning briefing', ipa:'/ˈmɔːrnɪŋ ˈbriːfɪŋ/', trans:'reunião matinal / briefing', ex:'Good morning team! I am Ricardo.', pt:'Bom dia equipe! Eu sou Ricardo.', why:'Contexto do Áudio 1 — abertura de um briefing diário de equipe no agro' },
+    { step:'02 / 10', word:'client', ipa:'/ˈklaɪənt/', trans:'cliente', ex:'She is with the client.', pt:'Ela está com o cliente.', why:'Aparece no Áudio 1 — palavra-chave em qualquer contexto de vendas agrícolas' },
+    { step:'03 / 10', word:'project', ipa:'/ˈprɒdʒekt/', trans:'projeto', ex:'He is ready for the project.', pt:'Ele está pronto para o projeto.', why:'Aparece no Áudio 1 — use com ready for para confirmar prontidão de equipe' },
+    { step:'04 / 10', word:'in training', ipa:'/ɪn ˈtreɪnɪŋ/', trans:'em treinamento', ex:'They are in training.', pt:'Eles estão em treinamento.', why:'Aparece no Áudio 1 — explica por que alguém não está disponível no momento' },
+    { step:'05 / 10', word:'fair', ipa:'/feər/', trans:'feira de negócios', ex:'New partners at the fair.', pt:'Novos parceiros na feira.', why:'Contexto do Áudio 2 — feiras agro como Agrishow são pontos de networking internacional' },
+    { step:'06 / 10', word:'partner', ipa:'/ˈpɑːrtnər/', trans:'sócio / parceiro de negócios', ex:'He is a partner from the USA.', pt:'Ele é um parceiro dos EUA.', why:'Aparece no Áudio 2 — termo formal para parceiro de negócios estrangeiro' },
+    { step:'07 / 10', word:'representative', ipa:'/ˌreprɪˈzentətɪv/', trans:'representante', ex:'They are representatives.', pt:'Eles são representantes.', why:'Aparece no Áudio 2 — cargo comum em distribuidores de insumos agrícolas' },
+    { step:'08 / 10', word:'headquarters', ipa:'/ˈhedkwɔːrtərz/', trans:'sede / matriz da empresa', ex:'They are from the headquarters.', pt:'Eles são da sede.', why:'Aparece no Áudio 2 — diferencia quem é da sede de quem é da filial' },
+    { step:'09 / 10', word:'assistant', ipa:'/əˈsɪstənt/', trans:'assistente', ex:'These are the assistants.', pt:'Estes são os assistentes.', why:'Aparece no Áudio 3 — cargo de suporte frequente em equipes técnicas' },
+    { step:'10 / 10', word:'Welcome to...', ipa:'/ˈwelkəm tuː/', trans:'Bem-vindo/a a...', ex:'Welcome to the farm!', pt:'Bem-vindo à fazenda!', why:'Aparece no Áudio 3 — frase de abertura essencial para receber visitantes internacionais' },
+  ],
+  d5: [
+    { step:'01 / 10', word:'This is [name]. He/She is a [cargo].', ipa:'', trans:'Ao apresentar um colega individualmente', ex:'This is Ana. She is an agronomist.', pt:'Esta é a Ana. Ela é agrônoma.', why:'Fórmula completa de apresentação individual — pratique com o nome do seu colega real' },
+    { step:'02 / 10', word:'These are [name] and [name]. They are [cargo].', ipa:'', trans:'Ao apresentar dois colegas juntos', ex:'These are Paulo and Laura. They are agronomists.', pt:'Estes são Paulo e Laura. Eles são agrônomos.', why:'Use when introducing two people at once — common in farm visits and trade fairs' },
+    { step:'03 / 10', word:'He/She is from [city/team].', ipa:'', trans:'Ao dar a origem ou equipe da pessoa', ex:'She is from the technical team.', pt:'Ela é da equipe técnica.', why:'Informação de contexto — ajuda o parceiro a entender o papel da pessoa na empresa' },
+    { step:'04 / 10', word:'He/She is busy, but he/she is ready.', ipa:'', trans:'Ao mostrar disponibilidade apesar de ocupado', ex:'He is busy, but he is ready for the meeting.', pt:'Ele está ocupado, mas está pronto para a reunião.', why:'Chunk completo com but — transmite profissionalismo ao gerenciar expectativas' },
+    { step:'05 / 10', word:'Is he/she available for the meeting?', ipa:'', trans:'Ao perguntar sobre disponibilidade', ex:'Is she available for the meeting tomorrow?', pt:'Ela está disponível para a reunião amanhã?', why:'Pergunta formal de disponibilidade — mais profissional do que "Is she free?"' },
+    { step:'06 / 10', word:"No, he/she isn't. He/She is at the farm.", ipa:'', trans:'Ao informar indisponibilidade com localização', ex:"No, he isn't. He is at the farm today.", pt:'Não, ele não está. Ele está na fazenda hoje.', why:'Resposta completa — sempre adicione onde a pessoa está para ser mais informativo' },
+    { step:'07 / 10', word:'They are ready for the project.', ipa:'', trans:'Ao confirmar que a equipe está pronta', ex:'They are ready for the project. We can start.', pt:'Eles estão prontos para o projeto. Podemos começar.', why:'Confirmação de equipe — use para fechar uma apresentação de time com autoridade' },
+    { step:'08 / 10', word:'He/She is our specialist.', ipa:'', trans:'Ao destacar a expertise de um colega', ex:'This is Dr. Almeida. He is our specialist.', pt:'Este é o Dr. Almeida. Ele é nosso especialista.', why:'Valoriza o colega diante do parceiro — aumenta credibilidade da equipe' },
+    { step:'09 / 10', word:'They are from the [sales/technical/operations] team.', ipa:'', trans:'Ao indicar o departamento de um grupo', ex:'They are from the technical team.', pt:'Eles são da equipe técnica.', why:'Contextualize sempre o departamento — parceiros internacionais precisam dessa informação' },
+    { step:'10 / 10', word:'He/She is the right person for your project.', ipa:'', trans:'Ao recomendar um colega a um parceiro', ex:'She is the right person for your project.', pt:'Ela é a pessoa certa para o seu projeto.', why:'Frase de fechamento poderosa — conecta o colega diretamente à necessidade do parceiro' },
+  ],
+};
+
+// ═══════════════════════════════════════════════
+// FLASHCARD STATE & ENGINE — W2
+// ═══════════════════════════════════════════════
+const FC_STATE = {
+  d1:{ idx:0, spd:1, exSpd:1, voice:null },
+  d2:{ idx:0, spd:1, exSpd:1, voice:null },
+  d3:{ idx:0, spd:1, exSpd:1, voice:null },
+  d4:{ idx:0, spd:1, exSpd:1, voice:null },
+  d5:{ idx:0, spd:1, exSpd:1, voice:null },
+};
+
+// --- VOICE LOADING ---
+let sharedVoice = null;
+function loadVoicesForDeck(deckId) {
+  const all = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  const en = all.filter(v => v.lang.startsWith('en'));
+  if (!en.length) { setTimeout(() => loadVoicesForDeck(deckId), 300); return; }
+  const pref = ['Google US English','Samantha','Karen','Google UK English Female','Microsoft Aria'];
+  const sorted = [...en].sort((a, b) => {
+    const ai = pref.findIndex(p => a.name.includes(p.split(' ')[0]) && a.name.includes(p.split(' ').pop()));
+    const bi = pref.findIndex(p => b.name.includes(p.split(' ')[0]) && b.name.includes(p.split(' ').pop()));
+    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+  });
+  const top = sorted.slice(0, 4);
+  FC_STATE[deckId].voice = top[0] || null;
+  if (!sharedVoice) sharedVoice = top[0] || null;
+  const loading = document.getElementById('v-loading-' + deckId);
+  if (loading) loading.style.display = 'none';
+  const container = document.getElementById('v-btns-' + deckId);
+  if (!container) return;
+  container.innerHTML = '';
+  top.forEach((v, i) => {
+    const b = document.createElement('button');
+    b.className = 'vbtn' + (i === 0 ? ' active' : '');
+    b.textContent = v.name.replace('Google ','').replace('Microsoft ','').replace(' Online Natural','').replace(' Online','');
+    b.onclick = () => {
+      FC_STATE[deckId].voice = v;
+      stopAllFC(deckId);
+      container.querySelectorAll('.vbtn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    };
+    container.appendChild(b);
+  });
+}
+
+function stopAllFC(deckId) {
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  ['abtn-word-'+deckId,'abtn-ex-'+deckId].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('playing');
+  });
+}
+
+function sayFC(text, rate, btnId, deckId) {
+  stopAllFC(deckId);
+  if (!window.speechSynthesis || !text) return;
+  const u = new SpeechSynthesisUtterance(text);
+  const v = FC_STATE[deckId].voice || sharedVoice;
+  if (v) u.voice = v;
+  u.lang = 'en-US'; u.rate = rate;
+  const btn = document.getElementById(btnId);
+  if (btn) btn.classList.add('playing');
+  u.onend = u.onerror = () => { if (btn) btn.classList.remove('playing'); };
+  window.speechSynthesis.speak(u);
+}
+
+function sayWord(deckId) {
+  const c = CARDS[deckId][FC_STATE[deckId].idx];
+  sayFC(c.word, FC_STATE[deckId].spd, 'abtn-word-'+deckId, deckId);
+}
+function sayEx(deckId) {
+  const c = CARDS[deckId][FC_STATE[deckId].idx];
+  sayFC(c.ex, FC_STATE[deckId].exSpd, 'abtn-ex-'+deckId, deckId);
+}
+
+function setSpd(deckId, s, e) {
+  e.stopPropagation(); FC_STATE[deckId].spd = s;
+  document.getElementById('spd1-'+deckId).classList.toggle('active', s===1);
+  document.getElementById('spd07-'+deckId).classList.toggle('active', s===0.7);
+  sayWord(deckId);
+}
+function setExSpd(deckId, s, e) {
+  e.stopPropagation(); FC_STATE[deckId].exSpd = s;
+  document.getElementById('exspd1-'+deckId).classList.toggle('active', s===1);
+  document.getElementById('exspd07-'+deckId).classList.toggle('active', s===0.7);
+  sayEx(deckId);
+}
+
+// --- RENDER ---
+function buildDots(deckId) {
+  const container = document.getElementById('fc-dots-'+deckId);
+  if (!container) return;
+  container.innerHTML = '';
+  CARDS[deckId].forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'fc-dot' + (i===0?' active':'');
+    d.id = 'dot-'+deckId+'-'+i;
+    d.onclick = () => { FC_STATE[deckId].idx = i; renderFC(deckId); updateDots(deckId); };
+    container.appendChild(d);
+  });
+}
+
+function updateDots(deckId) {
+  CARDS[deckId].forEach((_, i) => {
+    const d = document.getElementById('dot-'+deckId+'-'+i);
+    if (!d) return;
+    d.className = 'fc-dot' + (i===FC_STATE[deckId].idx?' active':i<FC_STATE[deckId].idx?' done':'');
+  });
+}
+
+function renderFC(deckId) {
+  const c = CARDS[deckId][FC_STATE[deckId].idx];
+  document.getElementById('fc-step-'+deckId).textContent = c.step;
+  document.getElementById('fc-word-'+deckId).textContent = c.word;
+  document.getElementById('fc-ipa-'+deckId).textContent = c.ipa;
+  document.getElementById('fc-trans-'+deckId).textContent = c.trans;
+  document.getElementById('fc-ex-'+deckId).textContent = c.ex;
+  document.getElementById('fc-ex-pt-'+deckId).textContent = c.pt;
+  document.getElementById('fc-why-'+deckId).textContent = 'Por que importa: ' + c.why;
+  document.getElementById('fc-counter-'+deckId).textContent = (FC_STATE[deckId].idx+1) + ' de ' + CARDS[deckId].length;
+  stopAllFC(deckId);
+  document.getElementById('fc-front-'+deckId).classList.remove('hidden');
+  document.getElementById('fc-back-'+deckId).classList.remove('visible');
+}
+
+function handleCardClick(e, deckId) {
+  if (e.target.closest('.audio-btns') || e.target.closest('.abtn') || e.target.closest('.spd-btn')) return;
+  const front = document.getElementById('fc-front-'+deckId);
+  const back  = document.getElementById('fc-back-'+deckId);
+  const flipped = front.classList.contains('hidden');
+  front.classList.toggle('hidden', !flipped);
+  back.classList.toggle('visible', !flipped);
+}
+
+function fcNav(deckId, dir) {
+  FC_STATE[deckId].idx = (FC_STATE[deckId].idx + dir + CARDS[deckId].length) % CARDS[deckId].length;
+  renderFC(deckId); updateDots(deckId);
+}
+
+// --- INIT FLASHCARDS ---
+['d1','d2','d3','d4','d5'].forEach(id => {
+  buildDots(id);
+  renderFC(id);
+  if (window.speechSynthesis) {
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = () => ['d1','d2','d3','d4','d5'].forEach(loadVoicesForDeck);
+    }
+    loadVoicesForDeck(id);
+  }
+});
+
+
 const ANSWERS = {
   'd1e1_1':'he is','d1e1_2':'she is','d1e1_3':'she is','d1e1_4':'he is','d1e1_5':'she is','d1e1_6':'he is','d1e1_7':'he is',
   'd1d1_1':'she is at the office','d1d1_2':'he is an engineer','d1d1_3':'she is from brazil',
