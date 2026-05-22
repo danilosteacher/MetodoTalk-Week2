@@ -36,13 +36,38 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; padding-top: calc(var(--header-h) + var(--tabs-h)); }
 
-  #main-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--header-h); background: var(--green); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; box-shadow: 0 2px 12px rgba(0,0,0,.2); }
-  #main-header .logo { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: #fff; }
+  #main-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--header-h); background: var(--green); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; box-shadow: 0 2px 12px rgba(0,0,0,.2); gap: 8px; }
+  #main-header .logo { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: #fff; flex-shrink: 0; }
   #main-header .logo span { opacity: .7; font-size: .85rem; }
-  #main-header .week-badge { background: rgba(255,255,255,.18); color: #fff; font-weight: 700; font-size: .85rem; padding: 4px 14px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; }
+  #main-header .week-badge { background: rgba(255,255,255,.18); color: #fff; font-weight: 700; font-size: .85rem; padding: 4px 14px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
 
-  #day-tabs { position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 99; height: var(--tabs-h); background: #fff; border-bottom: 2px solid var(--gray-200); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-  .tab-btn { flex: 1; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 600; color: var(--gray-600); transition: all .2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-bottom: 3px solid transparent; padding: 0 4px; line-height: 1.2; }
+  /* Botões de ação no header */
+  .header-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .hbtn {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+    color: #fff; padding: 5px 12px; border-radius: 20px;
+    font-size: .75rem; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: background .2s; white-space: nowrap;
+  }
+  .hbtn:hover { background: rgba(255,255,255,.28); }
+  .hbtn-danger { background: rgba(220,38,38,.25); border-color: rgba(220,38,38,.4); }
+  .hbtn-danger:hover { background: rgba(220,38,38,.4); }
+  .save-indicator {
+    font-size: .68rem; color: rgba(255,255,255,.6);
+    font-family: 'JetBrains Mono', monospace; white-space: nowrap;
+  }
+  @media(max-width:600px){
+    #main-header .logo span { display: none; }
+    .hbtn span.hbtn-label { display: none; }
+    .save-indicator { display: none; }
+    .hbtn { padding: 5px 9px; }
+  }
+
+  /* tabs mobile */
+  #day-tabs { position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 99; height: var(--tabs-h); background: #fff; border-bottom: 2px solid var(--gray-200); display: flex; align-items: stretch; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow-x: auto; scrollbar-width: none; }
+  #day-tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { flex: 1; min-width: 70px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 600; color: var(--gray-600); transition: all .2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-bottom: 3px solid transparent; padding: 0 4px; line-height: 1.2; }
   .tab-btn .day-num { font-size: .68rem; font-weight: 700; opacity: .6; font-family: 'JetBrains Mono', monospace; }
   .tab-btn:hover { background: var(--gray-50); color: var(--green); }
   .tab-btn.active { color: var(--green); border-bottom-color: var(--green); background: var(--green-light); }
@@ -253,10 +278,28 @@
   .vocab-badge-teal { background: var(--teal); }
 
   @media(max-width:600px){
-    .day-hero { padding: 20px 18px; } .day-hero h1 { font-size: 1.4rem; }
-    .card { padding: 18px 16px; } #main-header { padding: 0 14px; }
-    .tab-btn { font-size: .72rem; } .phrase-row { flex-direction: column; align-items: flex-start; }
-    .vocab-table td, .vocab-table th { padding: 8px 10px; }
+    .day-hero { padding: 20px 18px; }
+    .day-hero h1 { font-size: 1.4rem; }
+    .card { padding: 16px 14px; }
+    .phrase-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .phrase-pt { text-align: left; }
+    /* exercícios mobile */
+    .ex-item { flex-wrap: wrap; gap: 6px; }
+    .ex-item input[type="text"] { min-width: 100%; font-size: 1rem; padding: 8px 12px; }
+    .btn-check { min-height: 40px; padding: 8px 14px; }
+    .btn-check-all { width: 100%; justify-content: center; min-height: 44px; }
+    /* flashcard mobile */
+    .flashcard { min-height: 260px; padding: 22px 16px; }
+    .fc-word { font-size: 1.35rem; }
+    .fc-arrow { width: 40px; height: 40px; }
+    .abtn { padding: 8px 14px; min-height: 40px; }
+    .spd-btn { min-height: 36px; padding: 6px 12px; }
+    .vbtn { min-height: 36px; padding: 6px 12px; }
+    /* textarea mobile */
+    .production-task textarea { font-size: 1rem; min-height: 100px; }
+    /* audio cards mobile */
+    .audio-btn { width: 100%; justify-content: center; min-height: 44px; }
+    .audio-steps { font-size: .82rem; }
   }
 </style>
 </head>
@@ -265,6 +308,15 @@
 <header id="main-header">
   <div class="logo">Talk It Easy <span>· English for Agribusiness</span></div>
   <div class="week-badge">W2 · Connection Hub</div>
+  <div class="header-actions">
+    <span class="save-indicator" id="save-indicator">—</span>
+    <button class="hbtn" onclick="saveProgress()" title="Salvar progresso">
+      💾 <span class="hbtn-label">Salvar</span>
+    </button>
+    <button class="hbtn hbtn-danger" onclick="clearProgress()" title="Limpar tudo">
+      🗑 <span class="hbtn-label">Limpar</span>
+    </button>
+  </div>
 </header>
 
 <nav id="day-tabs">
@@ -1053,39 +1105,92 @@ const FC_STATE = {
   d5:{ idx:0, spd:1, exSpd:1, voice:null },
 };
 
-// --- VOICE LOADING ---
+// --- VOICE LOADING — carrega 1x, compartilha todos os decks ---
 let sharedVoice = null;
-function loadVoicesForDeck(deckId) {
+let voicesLoaded = false;
+let voiceRetries = 0;
+const PREF_VOICES = ['Google US English','Samantha','Karen','Google UK English Female','Microsoft Aria'];
+
+function getBestVoices() {
   const all = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
   const en = all.filter(v => v.lang.startsWith('en'));
-  if (!en.length) { setTimeout(() => loadVoicesForDeck(deckId), 300); return; }
-  const pref = ['Google US English','Samantha','Karen','Google UK English Female','Microsoft Aria'];
-  const sorted = [...en].sort((a, b) => {
-    const ai = pref.findIndex(p => a.name.includes(p.split(' ')[0]) && a.name.includes(p.split(' ').pop()));
-    const bi = pref.findIndex(p => b.name.includes(p.split(' ')[0]) && b.name.includes(p.split(' ').pop()));
-    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
-  });
-  const top = sorted.slice(0, 4);
-  FC_STATE[deckId].voice = top[0] || null;
-  if (!sharedVoice) sharedVoice = top[0] || null;
-  const loading = document.getElementById('v-loading-' + deckId);
-  if (loading) loading.style.display = 'none';
-  const container = document.getElementById('v-btns-' + deckId);
-  if (!container) return;
-  container.innerHTML = '';
-  top.forEach((v, i) => {
-    const b = document.createElement('button');
-    b.className = 'vbtn' + (i === 0 ? ' active' : '');
-    b.textContent = v.name.replace('Google ','').replace('Microsoft ','').replace(' Online Natural','').replace(' Online','');
-    b.onclick = () => {
-      FC_STATE[deckId].voice = v;
-      stopAllFC(deckId);
-      container.querySelectorAll('.vbtn').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
+  if (!en.length) return [];
+  return [...en].sort((a, b) => {
+    const rank = v => {
+      const i = PREF_VOICES.findIndex(p => {
+        const parts = p.split(' ');
+        return parts.every(part => v.name.includes(part));
+      });
+      return i < 0 ? 99 : i;
     };
-    container.appendChild(b);
+    return rank(a) - rank(b);
+  }).slice(0, 4);
+}
+
+function applyVoicesToAllDecks(top) {
+  if (!top.length) return;
+  sharedVoice = top[0];
+  voicesLoaded = true;
+
+  ['d1','d2','d3','d4','d5'].forEach(deckId => {
+    FC_STATE[deckId].voice = top[0];
+
+    const loading = document.getElementById('v-loading-' + deckId);
+    if (loading) loading.style.display = 'none';
+
+    const container = document.getElementById('v-btns-' + deckId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    top.forEach((v, i) => {
+      const b = document.createElement('button');
+      b.className = 'vbtn' + (i === 0 ? ' active' : '');
+      b.textContent = v.name
+        .replace('Google ','').replace('Microsoft ','')
+        .replace(' Online Natural','').replace(' Online','')
+        .replace(' (Natural)','');
+      b.onclick = () => {
+        // sincroniza a voz escolhida em TODOS os decks ao mesmo tempo
+        ['d1','d2','d3','d4','d5'].forEach(id => FC_STATE[id].voice = v);
+        sharedVoice = v;
+        stopAllFC(deckId);
+        // atualiza botão ativo em todos os seletores
+        ['d1','d2','d3','d4','d5'].forEach(id => {
+          const c2 = document.getElementById('v-btns-' + id);
+          if (!c2) return;
+          Array.from(c2.querySelectorAll('.vbtn')).forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === i);
+          });
+        });
+      };
+      container.appendChild(b);
+    });
   });
 }
+
+function tryLoadVoices() {
+  const top = getBestVoices();
+  if (top.length) {
+    applyVoicesToAllDecks(top);
+    return;
+  }
+  // iOS Safari pode demorar — retry até 20x com backoff
+  voiceRetries++;
+  if (voiceRetries < 20) {
+    setTimeout(tryLoadVoices, voiceRetries < 5 ? 100 : 300);
+  }
+}
+
+// Inicialização de vozes
+if (window.speechSynthesis) {
+  // Chrome/Android dispara onvoiceschanged
+  window.speechSynthesis.onvoiceschanged = () => {
+    if (!voicesLoaded) tryLoadVoices();
+  };
+  // Primeira tentativa síncrona (funciona no Android)
+  tryLoadVoices();
+}
+
 
 function stopAllFC(deckId) {
   window.speechSynthesis && window.speechSynthesis.cancel();
@@ -1185,12 +1290,6 @@ function fcNav(deckId, dir) {
 ['d1','d2','d3','d4','d5'].forEach(id => {
   buildDots(id);
   renderFC(id);
-  if (window.speechSynthesis) {
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = () => ['d1','d2','d3','d4','d5'].forEach(loadVoicesForDeck);
-    }
-    loadVoicesForDeck(id);
-  }
 });
 
 
@@ -1273,6 +1372,127 @@ function checkAll(setId){
     box.style.borderColor=pct>=80?'#16a34a':pct>=50?'#f59e0b':'#dc2626';
   }
 }
+
+// ═══════════════════════════════════════════════
+// SAVE / RESTORE — localStorage
+// ═══════════════════════════════════════════════
+const STORAGE_KEY = 'talk_w2_progress';
+
+function saveProgress() {
+  const data = {};
+  // salva todos os inputs de texto
+  document.querySelectorAll('input[type="text"]').forEach(el => {
+    if (el.id) data['input_' + el.id] = el.value;
+  });
+  // salva todos os textareas
+  document.querySelectorAll('textarea').forEach(el => {
+    if (el.id) data['ta_' + el.id] = el.value;
+  });
+  // salva estado de respostas (cor da borda + feedback)
+  document.querySelectorAll('.feedback').forEach(el => {
+    if (el.id) data['fb_' + el.id] = { text: el.textContent, cls: el.className };
+  });
+  document.querySelectorAll('input[type="text"]').forEach(el => {
+    if (el.id) data['bc_' + el.id] = el.style.borderColor;
+  });
+  // salva aba ativa
+  const activePanel = document.querySelector('.day-panel.active');
+  if (activePanel) data['activeDay'] = activePanel.id;
+
+  data['savedAt'] = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+  // feedback visual
+  const ind = document.getElementById('save-indicator');
+  if (ind) {
+    ind.textContent = '✓ Salvo ' + data['savedAt'];
+    ind.style.color = 'rgba(255,255,255,.9)';
+    setTimeout(() => { ind.style.color = 'rgba(255,255,255,.6)'; }, 2000);
+  }
+}
+
+function restoreProgress() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  let data;
+  try { data = JSON.parse(raw); } catch(e) { return; }
+
+  // restaura inputs
+  Object.keys(data).forEach(k => {
+    if (k.startsWith('input_')) {
+      const el = document.getElementById(k.replace('input_',''));
+      if (el) el.value = data[k];
+    }
+    if (k.startsWith('ta_')) {
+      const el = document.getElementById(k.replace('ta_',''));
+      if (el) el.value = data[k];
+    }
+    if (k.startsWith('bc_')) {
+      const el = document.getElementById(k.replace('bc_',''));
+      if (el && data[k]) el.style.borderColor = data[k];
+    }
+    if (k.startsWith('fb_')) {
+      const el = document.getElementById(k.replace('fb_',''));
+      if (el && data[k]) { el.textContent = data[k].text; el.className = data[k].cls; }
+    }
+  });
+
+  // restaura score-boxes que estavam visíveis
+  Object.keys(SETS).forEach(setId => {
+    const box = document.getElementById('score-' + setId);
+    if (!box) return;
+    const ids = SETS[setId];
+    const correct = ids.filter(id => {
+      const fb = document.getElementById('fb-' + id);
+      return fb && fb.classList.contains('correct');
+    }).length;
+    if (correct > 0) {
+      const total = ids.length;
+      const pct = Math.round((correct / total) * 100);
+      const emoji = EMOJIS[Math.min(Math.floor(pct / 25), 4)];
+      box.style.display = 'block';
+      box.textContent = emoji + ' ' + correct + '/' + total + ' corretas (' + pct + '%)';
+      box.style.color = pct >= 80 ? '#166534' : pct >= 50 ? '#92400e' : '#991b1b';
+      box.style.borderColor = pct >= 80 ? '#16a34a' : pct >= 50 ? '#f59e0b' : '#dc2626';
+    }
+  });
+
+  // restaura modelos e scripts visíveis
+  document.querySelectorAll('.example-model, .script-box').forEach(el => {
+    if (el.style.display === 'block') el.style.display = 'block';
+  });
+
+  // restaura aba ativa
+  if (data['activeDay']) {
+    const match = data['activeDay'].match(/day-(\d)/);
+    if (match) showDay(parseInt(match[1]));
+  }
+
+  // mostra horário do último save
+  const ind = document.getElementById('save-indicator');
+  if (ind && data['savedAt']) ind.textContent = 'Último save: ' + data['savedAt'];
+}
+
+function clearProgress() {
+  if (!confirm('Limpar todo o progresso desta semana? Esta ação não pode ser desfeita.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  document.querySelectorAll('input[type="text"]').forEach(el => {
+    el.value = ''; el.style.borderColor = '';
+  });
+  document.querySelectorAll('textarea').forEach(el => el.value = '');
+  document.querySelectorAll('.feedback').forEach(el => { el.textContent = ''; el.className = 'feedback'; });
+  document.querySelectorAll('.score-box').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.example-model, .script-box').forEach(el => el.style.display = 'none');
+  const ind = document.getElementById('save-indicator');
+  if (ind) ind.textContent = '—';
+}
+
+// Auto-save a cada 60 segundos
+setInterval(saveProgress, 60000);
+
+// Restaurar ao carregar
+window.addEventListener('DOMContentLoaded', restoreProgress);
+
 </script>
 </body>
 </html>
